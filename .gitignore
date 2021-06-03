@@ -1,0 +1,76 @@
+/backend/node_modules
+/backend/public/hot
+/backend/public/storage
+/backend/storage/*.key
+/backend/vendor
+/backend/.env
+/backend/.env.backup
+/backend/.phpunit.result.cache
+/backend/docker-compose.override.yml
+/backend/Homestead.json
+/backend/Homestead.yaml
+/backend/npm-debug.log
+/backend/yarn-error.log
+
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# OSX
+#
+/client-frontend/.DS_Store
+
+# Xcode
+#
+/client-frontend/build/
+/client-frontend/*.pbxuser
+/client-frontend/!default.pbxuser
+/client-frontend/*.mode1v3
+/client-frontend/!default.mode1v3
+/client-frontend/*.mode2v3
+/client-frontend/!default.mode2v3
+/client-frontend/*.perspectivev3
+/client-frontend/!default.perspectivev3
+/client-frontend/xcuserdata
+/client-frontend/*.xccheckout
+/client-frontend/*.moved-aside
+/client-frontend/DerivedData
+/client-frontend/*.hmap
+/client-frontend/*.ipa
+/client-frontend/*.xcuserstate
+
+# Android/IntelliJ
+#
+/client-frontend/build/
+/client-frontend/.idea
+/client-frontend/.gradle
+/client-frontend/local.properties
+/client-frontend/*.iml
+
+# node.js
+#
+/client-frontend/node_modules/
+/client-frontend/npm-debug.log
+/client-frontend/yarn-error.log
+
+# BUCK
+/client-frontend/buck-out/
+/client-frontend/\.buckd/
+/client-frontend/*.keystore
+/client-frontend/!debug.keystore
+
+# fastlane
+#
+# It is recommended to not store the screenshots in the git repo. Instead, use fastlane to re-generate the
+# screenshots whenever they are needed.
+# For more information about the recommended setup visit:
+# https://docs.fastlane.tools/best-practices/source-control/
+
+/client-frontend/*/fastlane/report.xml
+/client-frontend/*/fastlane/Preview.html
+/client-frontend/*/fastlane/screenshots
+
+# Bundle artifact
+/client-frontend/*.jsbundle
+
+# CocoaPods
+/client-frontend/ios/Pods/
+
