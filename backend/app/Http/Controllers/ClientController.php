@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use App\Models\User;
 use App\Models\Client;
+use App\Models\Address;
+use App\Models\Rating;
 use Illuminate\Support\Str;
 
 class ClientController extends Controller
@@ -48,9 +50,34 @@ class ClientController extends Controller
         return response($response, 200);
     }
 
+    /**
+    * Get client details.
+    *
+    * @param  
+    * @return JSON Response
+    *
+    */
     public function clientDetails() {
-        // Where to get the address details?
+
         $client = Client::with('user')->where('user_id',auth('users-api')->user()->id )->first();
-        return response()->json($client ,  200);
+        // error_log($admin['user']->address_id);
+        $client['user']['address'] = Address::where('id' , $client['user']->address_id )->first();
+        return response()->json($client, 200);
+    }
+
+    /**
+    * Rate market.
+    *
+    * @param  
+    * @return JSON Response
+    *
+    */
+    public function addRating(Request $request) {
+        $rating = new Rating();
+        $rating->client_id = $request['client_id'];
+        $rating->market_id = $request['market_id'];
+        $rating->stars = $request['stars'];
+        $rating->save();
+        return response($rating, 200);
     }
 }

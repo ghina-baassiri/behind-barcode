@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\CommonAPIsController;
 use App\Models\User;
 
 
@@ -26,17 +27,23 @@ use App\Models\User;
 Route::post('login', [LoginController::class, 'login']);
 Route::post('clientRegister', [ClientController::class, 'register']);
 Route::post('adminRegister', [AdminController::class, 'register']);
-Route::middleware('auth.client')->get('clientDetails', [ClientController::class, 'clientDetails']);
-Route::middleware('auth.admin')->get('adminDetails', [AdminController::class, 'adminDetails']);
-Route::middleware('auth.user')->get('forAll', function() {
-    return response()->json("THIS IS FOR ALL USERS PERMISSIONS " ,  200);
-});
-Route::get('permission', function() {
-    echo 'permission: ' . config('permission_levels.client');
+
+
+Route::group(['middleware' => 'auth.client'], function () {
+    Route::get('clientDetails', [ClientController::class, 'clientDetails']);  
+    Route::post('addRating', [ClientController::class, 'addRating']);
 });
 
+Route::group(['middleware' => 'auth.admin'], function () {
+    Route::get('adminDetails', [AdminController::class, 'adminDetails']);  
+});
 
-
+Route::group(['middleware' => 'auth.user'], function () {
+    Route::get('allMarkets', [CommonAPIsController::class, 'allMarkets']);
+    Route::get('allProducts', [CommonAPIsController::class, 'allProducts']);
+    Route::get('marketProducts/{id}', [CommonAPIsController::class, 'marketProducts']); 
+    Route::get('productMarkets/{barcode}', [CommonAPIsController::class, 'productMarkets']);   
+});
 
 
 

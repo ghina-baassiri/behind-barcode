@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use App\Models\User;
 use App\Models\Admin;
+use App\Models\Address;
 use Illuminate\Support\Str;
 
 class AdminController extends Controller
@@ -44,9 +45,18 @@ class AdminController extends Controller
         return response($response, 200);
     }
 
+    /**
+    * Get admin details.
+    *
+    * @param  
+    * @return JSON Response
+    *
+    */
     public function adminDetails() {
-        // Where to get the address details?
+
         $admin = Admin::with('user')->where('user_id',auth('users-api')->user()->id )->first();
-        return response()->json($admin ,  200);
+        // error_log($admin['user']->address_id);
+        $admin['user']['address'] = Address::where('id' , $admin['user']->address_id )->first();
+        return response()->json($admin, 200);
     }
 }

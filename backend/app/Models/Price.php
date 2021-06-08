@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Market;
+use App\Models\Product;
 
 class Price extends Model
 {
@@ -17,4 +19,12 @@ class Price extends Model
     protected $fillable = [
         'price'
     ];
+
+    public function market() {
+        return $this->hasOne(Market::class, 'id', 'market_id');
+    }
+
+    public function product() {
+        return $this->hasOne(Product::class, 'barcode', 'product_barcode');
+    }
 }

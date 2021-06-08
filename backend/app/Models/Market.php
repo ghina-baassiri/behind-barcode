@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Address;
 
 class Market extends Model
 {
@@ -20,4 +21,8 @@ class Market extends Model
         'logo',
         'phone'
     ];
+
+    public function address() {
+        return $this->hasOne(Address::class, 'id', 'address_id');
+    }
 }
