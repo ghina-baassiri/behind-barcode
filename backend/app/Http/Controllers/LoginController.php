@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\User;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
+use App\Models\User;
+use App\Models\Admin;
+use App\Models\Client;
 
 class LoginController extends Controller
 {
@@ -16,21 +18,32 @@ class LoginController extends Controller
             'password' => 'required|string|min:6',
         ]);
         if ($validator->fails()) {
-            return response(['errors' => $validator->errors()->all()], 422);
+            return response(['message' => $validator->errors()->all()], 422);
         }
         $user = User::where('email', $request->email)->first();
         if ($user) {
             if (Hash::check($request->password, $user->password)) {
                 $token = $user->createToken('Laravel Password Grant Client')->accessToken;
-                $response = ['token' => $token];
+                $response['token'] = $token;
+
+                if ($user->permission_level == 1) {
+                    $client = Client::where('user_id', $user->id)->first();
+                    $response['client'] = $client;
+                    $response['client']['user'] = $user;
+
+                } else {
+                    $admin = Admin::where('user_id', $user->id)->first();
+                    $response['admin'] = $client;
+                    $response['admin']['user'] = $user;
+                }                
                 return response($response, 200);
             } else {
                 $response = ["message" => "Password mismatch"];
-                return response($response, 422);
+                return response($response, 401);
             }
         } else {
             $response = ["message" => 'User does not exist'];
-            return response($response, 422);
+            return response($response, 401);
         }
     }
 }

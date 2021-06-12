@@ -4,7 +4,7 @@ import { CommonScreenStyles } from '../utilities/Styles';
 import { PRODUCTS_DATA } from '../utilities/Data';
 import { PRICES_DATA } from '../utilities/Data';
 
-export default function MarketProductsScreen({ navigation, marketId }) {
+export default function MarketProductsScreen({ navigation }) {
   let MARKET_PRODUCTS = []
 
   let FILTERED_MARKET_PRODUCTS = PRICES_DATA.filter((val) => {

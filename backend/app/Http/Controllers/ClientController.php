@@ -24,21 +24,16 @@ class ClientController extends Controller
     */
     public function register(Request $request) {
         $validator = Validator::make($request->all(), [
-            'first_name' => 'required|string|max:255',
-            'last_name' => 'required|string|max:255',           
-            'display_name' => 'string|max:255',
+            'name' => 'required|string|max:255',
             'phone' => 'required|string|min:8|max:17',
-            'avatar' => 'image|mimes:jpg,png,jpeg,gif,svg|max:2048|dimensions:min_width=100,min_height=100,max_width=1000,max_height=1000',            
+            // 'avatar' => 'image|mimes:jpg,png,jpeg,gif,svg|max:2048|dimensions:min_width=100,min_height=100,max_width=1000,max_height=1000',            
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:6',
-            'fcm_token' => 'string',
-            'address' => 'required|string',
-            'longitude' => 'required|numeric',
-            'latitude' => 'required|numeric'
+            'fcm_token' => 'string'
         ]);
 
         if ($validator->fails()) {
-            return response(['errors'=>$validator->errors()->all()], 422);
+            return response(['message'=>$validator->errors()->all()], 422);
         }
 
         $request['password']=Hash::make($request['password']);
@@ -61,7 +56,6 @@ class ClientController extends Controller
 
         $client = Client::with('user')->where('user_id',auth('users-api')->user()->id )->first();
         // error_log($admin['user']->address_id);
-        $client['user']['address'] = Address::where('id' , $client['user']->address_id )->first();
         return response()->json($client, 200);
     }
 

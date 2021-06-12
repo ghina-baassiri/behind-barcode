@@ -6,6 +6,7 @@ import BarcodeScannerScreen from '../screens/BarcodeScannerScreen';
 import ProductStack from '../navigation/ProductStack';
 import MarketStack from '../navigation/MarketStack';
 import ChatScreen from '../screens/ChatScreen';
+import MapScreen from '../screens/MapScreen';
 import ChatTabBarButton from '../components/ChatTabBarButton';
 import {BottomTabStyles} from '../utilities/Styles';
 import { windowWidth } from '../utilities/Dimensions';
@@ -15,7 +16,7 @@ const HomeTabNavigation = createBottomTabNavigator();
 export default function HomeTab() {
   return (
     <HomeTabNavigation.Navigator 
-      initialRouteName='MarketStack'
+      initialRouteName='Map'
       tabBarOptions={{
         showLabel: false,
         style: {
@@ -29,8 +30,29 @@ export default function HomeTab() {
         }
       }}
     >
-      
       <HomeTabNavigation.Screen 
+        name="Map" 
+        component={MapScreen}
+        options={{
+          tabBarIcon: ({focused}) => (
+            <View style={{alignItems:'center', justifyContent:'center', margin:8}}>
+              <Image
+                source={require('../../assets/market_outline.png')}
+                resizeMode='contain'
+                style={{
+                  width:30,
+                  height:30,
+                  marginBottom:5,
+                  
+                  tintColor: focused ? '#1eb980' : '#748c94'
+                }}
+              />
+              <Text style={{color: focused ? '#1eb980' : '#748c94', fontSize:9, fontWeight:'bold'}}>MARKETS</Text>
+            </View>
+          )
+        }}
+      />
+      {/* <HomeTabNavigation.Screen 
         name="MarketStack" 
         component={MarketStack}
         options={{
@@ -51,7 +73,7 @@ export default function HomeTab() {
             </View>
           )
         }}
-      />
+      /> */}
       <HomeTabNavigation.Screen 
         name="ProductStack" 
         component={ProductStack} 

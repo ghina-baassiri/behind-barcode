@@ -23,13 +23,9 @@ class AdminController extends Controller
     */
     public function register(Request $request) {
         $validator = Validator::make($request->all(), [
-            'first_name' => 'required|string|max:255',
-            'last_name' => 'required|string|max:255',
+            'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:6',
-            'address' => 'required|string',
-            'longitude' => 'required|numeric',
-            'latitude' => 'required|numeric'
         ]);
 
         if ($validator->fails()) {
@@ -56,7 +52,6 @@ class AdminController extends Controller
 
         $admin = Admin::with('user')->where('user_id',auth('users-api')->user()->id )->first();
         // error_log($admin['user']->address_id);
-        $admin['user']['address'] = Address::where('id' , $admin['user']->address_id )->first();
         return response()->json($admin, 200);
     }
 }

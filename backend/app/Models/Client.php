@@ -20,7 +20,6 @@ class Client extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'display_name',
         'avatar',
         'phone',
         'fcm_token',
@@ -41,7 +40,6 @@ class Client extends Authenticatable
 
     public static function createClient(Request $request, int $user_id) {
         $client = new Client();
-        $client->display_name = $request['display_name'];
         $client->avatar = $request['avatar'];
         $client->phone = $request['phone'];
         $client->fcm_token = $request['fcm_token'];

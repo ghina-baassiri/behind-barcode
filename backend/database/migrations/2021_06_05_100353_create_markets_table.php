@@ -17,7 +17,7 @@ class CreateMarketsTable extends Migration
             $table->id();
             $table->string('name');
             $table->boolean('delivery')->default(0);
-            $table->binary('logo')->nullable();
+            $table->text('logo')->nullable();
             $table->string('phone');
             $table->unsignedBigInteger('address_id');
             $table->foreign('address_id')

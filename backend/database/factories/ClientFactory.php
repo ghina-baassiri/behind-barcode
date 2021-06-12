@@ -25,8 +25,8 @@ class ClientFactory extends Factory
         $user_id = \App\Models\User::all()->pluck('id')->toArray();
         $admin_id = \App\Models\Admin::all()->pluck('id')->toArray();
 
-        $all_images = glob('storage/app/public/images/users/*.*');
-        $key = array_rand($all_images);
+        // $all_images = glob('storage/app/public/images/users/*.*');
+        // $key = array_rand($all_images);
 
         $client_id = array();
         $index = 0;
@@ -37,12 +37,10 @@ class ClientFactory extends Factory
                 $client_id[$index] = $id;
                 $index ++;
             }
-        }
-            
+        }            
 
         return [
-            'display_name' => $this->faker->name(),
-            'avatar' => $all_images[$key],
+            'avatar' => null,
             'phone' => $this->faker->e164PhoneNumber(),          
             'fcm_token' => Str::random(6),
             'user_id' => $this->faker->randomElement($client_id),

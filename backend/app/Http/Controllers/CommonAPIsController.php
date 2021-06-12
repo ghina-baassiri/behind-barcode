@@ -33,6 +33,7 @@ class CommonAPIsController extends Controller
             $market['address'] = Address::where('id' , $market->address_id )->first();
             $ratings = Rating::with('market')->where('market_id' , $market->id )->get();
             $numOfRatings = count($ratings);
+            $avgRatings = null;
             if ($numOfRatings > 1) {
                 $sumRatings = 0;
                 foreach ($ratings as $rating) {
@@ -44,7 +45,7 @@ class CommonAPIsController extends Controller
             }
             $market['rating'] = floor($avgRatings);
         }       
-        return response()->json($markets, 200);
+        return response([ 'markets' => $markets ],200);
     }
 
     /**
@@ -75,6 +76,8 @@ class CommonAPIsController extends Controller
     public function marketProducts($id) {
 
         $products = Price::with('market')->where('market_id', $id)->get();
+        $market = Market::where('id', $id)->first();
+
         $counter = 0;
 
         foreach($products as $product) {
@@ -93,8 +96,11 @@ class CommonAPIsController extends Controller
             ];
 
             $counter++;
-        }   
-        return response()->json($productsDetails, 200);
+        }
+        $marketProductsDetails['market'] = $market;
+        $marketProductsDetails['products'] = $productsDetails;
+
+        return response()->json($marketProductsDetails, 200);
     }
 
     /**
@@ -107,6 +113,8 @@ class CommonAPIsController extends Controller
     public function productMarkets($barcode) {
 
         $markets = Price::with('product')->where('product_barcode', $barcode)->get();
+        $product = Product::where('barcode', $barcode)->first();
+
         $counter = 0;
 
         foreach($markets as $market) {
@@ -115,6 +123,7 @@ class CommonAPIsController extends Controller
 
             $ratings = Rating::with('market')->where('market_id' , $market->id )->get();
             $numOfRatings = count($ratings);
+            $avgRatings = null;
             if ($numOfRatings > 1) {
                 $sumRatings = 0;
                 foreach ($ratings as $rating) {
@@ -138,7 +147,10 @@ class CommonAPIsController extends Controller
 
             $counter++;
         }   
-        return response()->json($marketsDetails, 200);
+        $productMarketsDetails['product'] = $product;
+        $productMarketsDetails['markets'] = $marketsDetails;
+
+        return response()->json($productMarketsDetails, 200);
     }
 
     

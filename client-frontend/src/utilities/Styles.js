@@ -103,7 +103,7 @@ export const SplashScreenStyles = StyleSheet.create ({
       borderTopLeftRadius: 30,
       borderTopRightRadius: 30,
       paddingVertical: 50,
-      paddingHorizontal: 30
+      paddingHorizontal: 50
   },
   logo: {
       width: width_logo,
@@ -140,9 +140,12 @@ export const SplashScreenStyles = StyleSheet.create ({
   },
 });
 
-// Home screen styles
-export const HomeScreenStyles = StyleSheet.create ({
-    
+// Map styles
+export const MapStyles = StyleSheet.create ({
+    map: {
+      height: windowHeight,
+      width: windowWidth
+    }
 });
 
 // Login screen styles
@@ -174,6 +177,11 @@ export const LoginScreenStyles = StyleSheet.create ({
       color: '#05375a',
       fontSize: 18
   },
+  text_validation: {
+    color: '#cf4332',
+    fontSize: 12,
+    marginTop: 5
+  },
   action: {
       flexDirection: 'row',
       marginTop: 10,
@@ -201,7 +209,7 @@ export const LoginScreenStyles = StyleSheet.create ({
   },
   button: {
       alignItems: 'center',
-      marginTop: 50
+      marginTop: 10
   },
   signIn: {
       width: '100%',
@@ -227,10 +235,10 @@ export const ListStyles = StyleSheet.create ({
     backgroundColor: '#e6ecec'
   },
   image: {
-    flex:0.7,
-    width:80, 
-    height:85, 
-    borderRadius:80, 
+    // flex:0.7,
+    width:120, 
+    height:120, 
+    // borderRadius:80, 
     marginRight:20,
     marginLeft: 8
   },

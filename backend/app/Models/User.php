@@ -19,11 +19,9 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'first_name',
-        'last_name',
+        'name',
         'email',
         'password',
-        'address_id',
         'permission_level'      
     ];
 
@@ -37,23 +35,13 @@ class User extends Authenticatable
         'remember_token',
     ];
 
-    public function address() {
-        return $this->hasOne(Address::class, 'id', 'address_id');
-    }
 
     public static function createUser(array $userData, int $permission_level) {
-        $address = Address::create([
-            'address' => $userData['address'],
-            'longitude' => $userData['longitude'],
-            'latitude' => $userData['latitude'],
-        ]);
         return User::create([
-            'first_name' => $userData['first_name'],
-            'last_name' => $userData['last_name'],
+            'name' => $userData['name'],
             'permission_level' => $permission_level,
             'email' => $userData['email'],
             'password' => $userData['password'],
-            'address_id' => $address->id,
         ]);
     }
 }

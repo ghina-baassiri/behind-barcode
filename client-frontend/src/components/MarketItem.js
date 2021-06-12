@@ -7,8 +7,8 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 export default function MarketItem({ item, setSelectedId }) {
   
-  {console.log('In MarketItem component')}
-  {console.log('image directory: ', item.logo)}
+  // {console.log('In MarketItem component')}
+  // {console.log('image directory: ', item.logo)}
 
   // Calculate market rating average
   

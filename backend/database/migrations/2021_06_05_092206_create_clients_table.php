@@ -15,8 +15,7 @@ class CreateClientsTable extends Migration
     {
         Schema::create('clients', function (Blueprint $table) {
             $table->id();
-            $table->string('display_name')->nullable();
-            $table->binary('avatar')->nullable();
+            $table->text('avatar')->nullable();
             $table->string('phone');            
             $table->string('fcm_token')->nullable();
             $table->unsignedBigInteger('user_id');
