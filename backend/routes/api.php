@@ -43,6 +43,8 @@ Route::group(['middleware' => 'auth.user'], function () {
     Route::get('allProducts', [CommonAPIsController::class, 'allProducts']);
     Route::get('marketProducts/{id}', [CommonAPIsController::class, 'marketProducts']); 
     Route::get('productMarkets/{barcode}', [CommonAPIsController::class, 'productMarkets']);   
+    Route::get('product/{barcode}', [CommonAPIsController::class, 'product']);   
+
 });
 
 
