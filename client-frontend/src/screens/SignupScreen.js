@@ -1,14 +1,14 @@
-import React, { useState, useContext, useEffect } from 'react';
-import { Text, View, TextInput, Image, Easing, TouchableOpacity, StatusBar, ScrollView } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { Text, View, TextInput, TouchableOpacity, ScrollView } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import Feather from 'react-native-vector-icons/Feather';
 import axios from 'axios';
 
 import { LoginScreenStyles } from '../utilities/Styles';
 import { CommonScreenStyles } from '../utilities/Styles';
-import * as Location from 'expo-location';
+import SuccessModal from '../components/SuccessModal';
 
-export default function LoginScreen({ navigation }) {
+export default function SignupScreen({ navigation }) {
 
   const [passwordVisibilityIcon, setpasswordVisibilityIcon] = useState('eye-off-outline')
   const [passwordVisibility, setpasswordVisibility] = useState(true)
@@ -20,9 +20,9 @@ export default function LoginScreen({ navigation }) {
   const [confirmPassword, setConfirmPassword] = useState('')
   const [name, setName] = useState('')
   const [phone, setPhone] = useState('')
+  const [success, setSuccess] = useState(false)
 
-
-  const [validationMsg, setValidationMsg] = useState({ 'email' :'', 'password': '', 'name': '', 'phone': '' })
+  const [validationMsg, setValidationMsg] = useState({ 'email' :'', 'password': '', 'confirmPassword': '','name': '', 'phone': '' })
   const emailFormat = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/
   const phoneNumberFormat = /^(961(3|70|71|80|81)|(03|70|71|80|81))\d{6}$/
 
@@ -33,7 +33,7 @@ export default function LoginScreen({ navigation }) {
       setConfirmPassword('')
       setName('')
       setPhone('')
-      setValidationMsg({ email:'', password: '', name: '', phone: '' })   
+      setValidationMsg({ email:'', password: '', confirmPassword: '', name: '', phone: '' })   
      
   }, [])
   
@@ -61,7 +61,11 @@ export default function LoginScreen({ navigation }) {
     axios.post(`http://192.168.43.152:8000/api/clientRegister`, data).then(response => {        
       console.log('SUCCESS: Recieved SignUp API Response: ', response.data)
       if(response.status === 200) {
-        navigation.navigate('Login')      
+        if(confirmPassword && !validationMsg.confirmPassword) {
+          console.log('SUCCESS')
+          // return(<SuccessModal navigation={navigation}/>)
+          setSuccess(true)
+        }    
       }
     }).catch(err => {
       console.log('The Registration API Error: ', err.response)
@@ -70,6 +74,12 @@ export default function LoginScreen({ navigation }) {
           console.log('Register API Response Message: ', err.response.data.message)
 
           err.response.data.message.map((message) => {
+            if(message.includes("name")) {            
+              setValidationMsg(prevState => ({
+                ...prevState,
+                name: message
+              }))
+            }
             if(message.includes("email")) {            
               setValidationMsg(prevState => ({
                 ...prevState,
@@ -78,6 +88,7 @@ export default function LoginScreen({ navigation }) {
             }
             if(message.includes("password")) {
               setPassword('')   
+              setConfirmPassword('') 
               setValidationMsg(prevState => ({
                 ...prevState,
                 password: message
@@ -100,13 +111,69 @@ export default function LoginScreen({ navigation }) {
     })   
   } 
 
+
+  useEffect(()=>{
+    if(confirmPassword && password && confirmPassword!=password) {
+      setValidationMsg(prevState => ({
+        ...prevState,
+        confirmPassword: "Passwords don't match"
+      }))
+    } 
+    else if(confirmPassword && password && confirmPassword==password) {
+      setValidationMsg(prevState => ({
+        ...prevState,
+        confirmPassword: ''
+      }))
+    }
+    
+  },[confirmPassword])
+
+
+  useEffect(()=>{
+    if(validationMsg.password && password.length>5) {
+      setValidationMsg(prevState => ({
+        ...prevState,
+        password: ''
+      }))
+    }
+  },[password])
+
+  useEffect(()=>{
+    if(validationMsg.email && email.match(emailFormat)) {
+      setValidationMsg(prevState => ({
+        ...prevState,
+        email: ''
+      }))
+    }
+  },[email])
+
+  useEffect(()=>{
+    if(validationMsg.phone && phone.match(phoneNumberFormat)) {
+      setValidationMsg(prevState => ({
+        ...prevState,
+        phone: ''
+      }))
+    }
+  },[phone])
+
+  useEffect(()=>{
+    if(validationMsg.name && name) {
+      setValidationMsg(prevState => ({
+        ...prevState,
+        name: ''
+      }))
+    }
+  },[name])
+
+
   return (
     <View style={LoginScreenStyles.container}>
+      {success ? <SuccessModal navigation={navigation}/> : null}
       <View style={LoginScreenStyles.header}>
         <Text style={LoginScreenStyles.text_header}>Let's join BB</Text>
       </View>
       <View style={{...LoginScreenStyles.footer}}>
-      <ScrollView style={{paddingBottom: 5}}>
+      <ScrollView style={{paddingBottom: 5}} showsVerticalScrollIndicator={false}>
         <View style={{ marginBottom: 10 }}>
           <Text style={LoginScreenStyles.text_footer}>Name</Text>        
           <View style={LoginScreenStyles.action}>
@@ -160,7 +227,7 @@ export default function LoginScreen({ navigation }) {
               />
               : phone ?
               <Feather
-                name='check-circle'
+                name='x-circle'
                 size={20}
                 color='#cf4332'
               />
@@ -256,8 +323,10 @@ export default function LoginScreen({ navigation }) {
               onPress={onConfirmPasswordVisibilityIconToggle}
             />
           </View>
-          { validationMsg.password ?
-            <Text style={LoginScreenStyles.text_validation}>{validationMsg.password}</Text>
+          
+          { 
+            validationMsg.confirmPassword ?
+            <Text style={LoginScreenStyles.text_validation}>{validationMsg.confirmPassword}</Text>
             : null
           }
         </View>
@@ -281,7 +350,9 @@ export default function LoginScreen({ navigation }) {
           <View style={{...CommonScreenStyles.navButton, justifyContent: 'center', alignItems: 'center'}}>
             <Text style={{...LoginScreenStyles.text_footer, fontSize: 15}}>Already a user? </Text>
             <TouchableOpacity
-              onPress={() => navigation.navigate('Login')}
+              onPress={() => {
+                onSignUpPress()                
+              }}
             >
               <Text style={{...LoginScreenStyles.text_footer,  textDecorationLine:'underline', fontSize: 15}}>Sign In</Text>
             </TouchableOpacity>
