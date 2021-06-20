@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { Text, View, TouchableOpacity, Image, FlatList } from 'react-native';
+import { Text, View, TouchableOpacity, Image, FlatList, TextInput, StyleSheet } from 'react-native';
 import { AuthContext } from '../navigation/AuthProvider';
-import { CommonScreenStyles } from '../utilities/Styles';
+import { CommonScreenStyles, LoginScreenStyles } from '../utilities/Styles';
 import { ListStyles } from '../utilities/Styles';
+import { windowWidth } from '../utilities/Dimensions';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import axios from 'axios'
 
@@ -10,6 +11,9 @@ import axios from 'axios'
 export default function ProductsScreen({ navigation }) {
 
   const [products, setProducts] = useState([]);
+  const [filteredProducts, setFilteredProducts] = useState([]);
+  const [search, setSearch] = useState('');
+
   const { token } = useContext(AuthContext)
  
 
@@ -21,6 +25,7 @@ export default function ProductsScreen({ navigation }) {
     .then(response => {        
       // console.log('SUCCESS: Recieved allProducts API Response: ', response.data.products)        
       setProducts(response.data.products)
+      setFilteredProducts(response.data.products)
       return
     })
     .catch(err => {
@@ -28,6 +33,21 @@ export default function ProductsScreen({ navigation }) {
     })   
   }
 
+  const searchFilter = (text) => {
+    if(text) {
+      const newData = products.filter((item) => {
+        const itemData = item.brand ? item.brand.toUpperCase() : ''.toUpperCase()
+        const textData = text.toUpperCase()
+        return itemData.indexOf(textData) > -1
+      })
+    setFilteredProducts(newData)
+    setSearch(text)
+    }
+    else {
+      setFilteredProducts(products)
+      setSearch(text)
+    }
+  }
 
   useEffect(() => {
     fetchAllProducts()       
@@ -35,11 +55,17 @@ export default function ProductsScreen({ navigation }) {
 
   return ( 
     <View style={CommonScreenStyles.container}>
-      
+      <TextInput
+        style={styles.textInput}
+        value={search}
+        placeholder='Search Product'
+        underlineColorAndroid='transparent'
+        onChangeText={(text)=>searchFilter(text)}
+      />
         <FlatList
           bounces={true}
-          keyExtractor={item => item.barcode.toString()}
-          data={products}        
+          keyExtractor={(item, index) => index.toString()}
+          data={filteredProducts}        
           renderItem={item => {
             return (
                 <TouchableOpacity 
@@ -80,3 +106,16 @@ export default function ProductsScreen({ navigation }) {
       </View> 
   )
 }
+
+
+const styles = StyleSheet.create({
+  textInput: {
+    height: 50,
+    width: windowWidth*0.9,
+    borderWidth: 1,
+    paddingLeft: 20,
+    margin: 5,
+    borderColor: '#009688',
+    backgroundColor: '#fff'
+  }
+})
