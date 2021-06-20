@@ -1,17 +1,17 @@
 import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
-import MarketsScreen from '../screens/MarketsScreen';
 import MarketProductsScreen from '../screens/MarketProductsScreen';
+import MapScreen from '../screens/MapScreen';
 
 const MarketStackNavigation = createStackNavigator();
 
 export default function MarketStack() {
 
   return (
-    <MarketStackNavigation.Navigator initialRouteName='Markets'>
+    <MarketStackNavigation.Navigator initialRouteName='Map'>
       <MarketStackNavigation.Screen 
-        name="Markets" 
-        component={MarketsScreen} 
+        name="Map" 
+        component={MapScreen} 
         options={{ header: () => null }} 
       />
       <MarketStackNavigation.Screen 
