@@ -63,7 +63,7 @@ class CommonAPIsController extends Controller
             $product['unit'] = Unit::where('id' , $product->unit_id )->pluck('name')->all();
             $product['category'] = Category::where('id' , $product->category_id )->pluck('name')->all();
         }       
-        return response()->json($products, 200);
+        return response()->json([ 'products' => $products ], 200);
     }
 
     /**
@@ -100,7 +100,7 @@ class CommonAPIsController extends Controller
         $marketProductsDetails['market'] = $market;
         $marketProductsDetails['products'] = $productsDetails;
 
-        return response()->json($marketProductsDetails, 200);
+        return response()->json([ 'marketProductsDetails' => $marketProductsDetails ], 200);
     }
 
     /**
@@ -150,8 +150,21 @@ class CommonAPIsController extends Controller
         $productMarketsDetails['product'] = $product;
         $productMarketsDetails['markets'] = $marketsDetails;
 
-        return response()->json($productMarketsDetails, 200);
+        return response()->json([ 'productMarketsDetails' => $productMarketsDetails ], 200);
     }
 
+
+    /**
+    * Get product.
+    *
+    * @param  
+    * @return JSON Response
+    *
+    */
+    public function product($barcode) {
+
+        $product = Product::where('barcode', $barcode)->first();
+        return response()->json([ 'product' => $product ], 200);
+    }
     
 }

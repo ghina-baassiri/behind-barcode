@@ -17,7 +17,7 @@ class CreateProductsTable extends Migration
             $table->char('barcode', 13)->unique();
             $table->string('brand');
             $table->float('size', 6, 3);
-            $table->binary('image')->nullable();
+            $table->text('image')->nullable();
             $table->unsignedBigInteger('unit_id');
             $table->foreign('unit_id')
                 ->references('id')
