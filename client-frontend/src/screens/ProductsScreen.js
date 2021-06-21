@@ -5,6 +5,9 @@ import { CommonScreenStyles, LoginScreenStyles } from '../utilities/Styles';
 import { ListStyles } from '../utilities/Styles';
 import { windowWidth } from '../utilities/Dimensions';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import { ActivityIndicator } from 'react-native-paper';
+import Svg from 'react-native-svg';
+import {Image as SvgImage}  from 'react-native-svg';
 import axios from 'axios'
 
 
@@ -13,9 +16,12 @@ export default function ProductsScreen({ navigation }) {
   const [products, setProducts] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState([]);
   const [search, setSearch] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [borderWidth, setBorderWidth] = useState(1);
+
 
   const { token } = useContext(AuthContext)
- 
+  let product = {}
 
   const fetchAllProducts = () => {
     axios.get(`http://192.168.43.152:8000/api/allProducts`, {
@@ -23,7 +29,7 @@ export default function ProductsScreen({ navigation }) {
         'Authorization': `Bearer ${token}`
       }})
     .then(response => {        
-      // console.log('SUCCESS: Recieved allProducts API Response: ', response.data.products)        
+      setIsLoading(false)
       setProducts(response.data.products)
       setFilteredProducts(response.data.products)
       return
@@ -49,59 +55,72 @@ export default function ProductsScreen({ navigation }) {
     }
   }
 
+  const onFocus = () => {
+    setBorderWidth(2.5)
+  }
+
+  const onBlur = () => {
+    setBorderWidth(1)
+  }
+
   useEffect(() => {
     fetchAllProducts()       
   }, [])
 
   return ( 
     <View style={CommonScreenStyles.container}>
-      <TextInput
-        style={styles.textInput}
-        value={search}
-        placeholder='Search Product'
-        underlineColorAndroid='transparent'
-        onChangeText={(text)=>searchFilter(text)}
-      />
+      {isLoading &&  <ActivityIndicator size='large' color='#1eb980' animating={true} style={{opacity:1, position:'absolute', right:0,left:0,top:0,bottom:0 }}/>}
+      <View style={{paddingVertical:5, backgroundColor:'#1eb980', zIndex:1, width:'100%', alignItems:'center'}}>
+        <TextInput
+          style={{...styles.textInput, borderWidth:borderWidth }}
+          value={search}
+          placeholder='Search Product'
+          underlineColorAndroid='transparent'
+          onChangeText={(text)=>searchFilter(text)}
+          onFocus={ () => onFocus() }
+          onBlur={ () => onBlur() }
+        />
+      </View>
         <FlatList
           bounces={true}
           keyExtractor={(item, index) => index.toString()}
           data={filteredProducts}        
           renderItem={item => {
+            product = item.item
             return (
-                <TouchableOpacity 
-                  
+                <TouchableOpacity                   
                   style={ ListStyles.itemWrapper }
-                  onPress={() => navigation.navigate('ProductMarkets', { productBarcode: item.item.barcode })}
+                  onPress={() => navigation.navigate('ProductMarkets', { product: product})}
                 >
-                  {console.log('BARCODEEE: ', item.item.barcode)}
-                      <View>                          
-                        <Image
-                          source={{uri:item.item.image }} 
-                          resizeMode='contain'
-                          style={ ListStyles.image }
-                        />                                         
-                        
-                      </View>
-                      <View style={{flex: 1.4}}>
-                          <Text style={{ color:'#000', fontSize:20, marginTop:7}}>{item.item.brand}</Text>
+                  <View style={{ elevation:3, flexDirection:'row', padding: 10, alignContent:'center', borderColor: '#1eb980', borderWidth:1.5, borderRadius:20, backgroundColor:'#fff'}}>
+                      <Svg width={90} height={90} style={{ paddingVertical:10, marginRight:5}}>
+                          <SvgImage
+                              href={product.image}
+                              width={80}
+                              height={80}                                
+                          />
+                      </Svg>
+                      <View >
+                          <Text style={{ color:'#000', fontSize:16, marginTop:7, fontWeight:'bold'}}>{product.brand}</Text>
                       
-                          <Text style={{marginTop:7}}>{item.item.category}</Text>
+                          <Text style={{paddingVertical:1}}>{product.category}</Text>
 
-                          <Text style={{marginTop:7}}>{item.item.size + ' ' + item.item.unit}</Text>
-                      </View>
-                      <View style={{flex:0.2}}>
+                          <Text style={{paddingVertical:1}}>{product.size + ' ' + product.unit}</Text>
+                      </View>  
+                      <View style={{position:'absolute', right:3, top:83}}>
                         <MaterialIcons
                           name='navigate-next'
                           color='#000'
                           size={20}
                         />
-                      </View>
-                        
-                    </TouchableOpacity>
+                      </View> 
+
+                  </View>
+                </TouchableOpacity>
                   )}}
                 
                 showsVerticalScrollIndicator={false}              
-                contentContainerStyle={{paddingTop:10,paddingBottom:65}}
+                contentContainerStyle={{paddingTop:5,paddingBottom:65}}
                 />
       </View> 
   )
@@ -112,10 +131,10 @@ const styles = StyleSheet.create({
   textInput: {
     height: 50,
     width: windowWidth*0.9,
-    borderWidth: 1,
     paddingLeft: 20,
     margin: 5,
-    borderColor: '#009688',
-    backgroundColor: '#fff'
+    backgroundColor: '#fff',
+    borderRadius:20,
+    borderColor: '#1eb980', 
   }
 })
