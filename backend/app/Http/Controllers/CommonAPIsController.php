@@ -76,7 +76,6 @@ class CommonAPIsController extends Controller
     public function marketProducts($id) {
 
         $products = Price::with('market')->where('market_id', $id)->get();
-        $market = Market::where('id', $id)->first();
 
         $counter = 0;
 
@@ -97,10 +96,8 @@ class CommonAPIsController extends Controller
 
             $counter++;
         }
-        $marketProductsDetails['market'] = $market;
-        $marketProductsDetails['products'] = $productsDetails;
 
-        return response()->json([ 'marketProductsDetails' => $marketProductsDetails ], 200);
+        return response()->json([ 'products' => $productsDetails ], 200);
     }
 
     /**
@@ -114,14 +111,14 @@ class CommonAPIsController extends Controller
 
         $markets = Price::with('product')->where('product_barcode', $barcode)->get();
         $product = Product::where('barcode', $barcode)->first();
-
         $counter = 0;
 
         foreach($markets as $market) {
+            
             $market['market'] = Market::where('id' , $market->market_id )->first();
-            $market['market']['address'] = Address::where('id' , $market['market']->address_id )->first();
-
-            $ratings = Rating::with('market')->where('market_id' , $market->id )->get();
+            $market['address'] = Address::where('id' , $market['market']->address_id )->first();
+            
+            $ratings = Rating::with('market')->where('market_id' , $market['market']->id )->get();
             $numOfRatings = count($ratings);
             $avgRatings = null;
             if ($numOfRatings > 1) {
@@ -133,8 +130,8 @@ class CommonAPIsController extends Controller
             } else if ($numOfRatings == 1) {
                 $avgRatings = $ratings[0]->stars;
             }
-
-            $marketsDetails[$counter] =  [
+            
+            $productMarkets[$counter] =  [
                 'id' => $market['market']['id'],
                 'name' => $market['market']['name'],
                 'delivery' => $market['market']['delivery'],
@@ -147,10 +144,10 @@ class CommonAPIsController extends Controller
 
             $counter++;
         }   
-        $productMarketsDetails['product'] = $product;
-        $productMarketsDetails['markets'] = $marketsDetails;
+        // $productMarketsDetails['product'] = $product;
+        // $productMarketsDetails['markets'] = $marketsDetails;
 
-        return response()->json([ 'productMarketsDetails' => $productMarketsDetails ], 200);
+        return response()->json([ 'markets' => $productMarkets ], 200);
     }
 
 

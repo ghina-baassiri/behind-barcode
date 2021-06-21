@@ -32,6 +32,7 @@ Route::post('adminRegister', [AdminController::class, 'register']);
 Route::group(['middleware' => 'auth.client'], function () {
     Route::get('clientDetails', [ClientController::class, 'clientDetails']);  
     Route::post('addRating', [ClientController::class, 'addRating']);
+    Route::get('marketRating', [ClientController::class, 'marketRating']);
 });
 
 Route::group(['middleware' => 'auth.admin'], function () {
