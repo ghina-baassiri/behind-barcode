@@ -74,4 +74,29 @@ class ClientController extends Controller
         $rating->save();
         return response($rating, 200);
     }
+
+    /**
+    * Get market average rating.
+    *
+    * @param  
+    * @return JSON Response
+    *
+    */
+    public function marketRating($marketId) {
+
+        $ratings = Rating::with('market')->where('market_id' , $marketId )->get();
+        $numOfRatings = count($ratings);
+        $avgRatings = null;
+        if ($numOfRatings > 1) {
+            $sumRatings = 0;
+            foreach ($ratings as $rating) {
+                $sumRatings += $rating->stars;
+            }
+            $avgRatings = $sumRatings/$numOfRatings;
+        } else if ($numOfRatings == 1) {
+            $avgRatings = $ratings[0]->stars;
+        }
+        $rating = floor($avgRatings);        
+        return response()->json([ 'rating' => $rating ], 200);
+    }
 }
