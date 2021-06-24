@@ -67,8 +67,10 @@ class ClientController extends Controller
     *
     */
     public function addRating(Request $request) {
+        $client = Client::with('user')->where('user_id' , $request['user_id'] )->first();
+
         $rating = new Rating();
-        $rating->client_id = $request['client_id'];
+        $rating->client_id = $client->id;
         $rating->market_id = $request['market_id'];
         $rating->stars = $request['stars'];
         $rating->save();
@@ -98,5 +100,33 @@ class ClientController extends Controller
         }
         $rating = floor($avgRatings);        
         return response()->json([ 'rating' => $rating ], 200);
+    }
+
+    /**
+    * Get if user rated a specific market or not.
+    *
+    * @param  
+    * @return JSON Response
+    *
+    */
+    public function rated($marketId, $userId) {
+        
+        $ratings = Rating::with('market')->where('market_id' , $marketId )->get();
+        $client = Client::with('user')->where('user_id' , $userId )->first();
+
+        $rated = false;
+
+        foreach ($ratings as $rating) {
+
+            if($rating->client_id == $client->id){
+                $rated= true;
+                break;
+            }
+        }
+        return response()->json([ 
+            'rated' => $rated,
+            'marketId' => $rating->market_id,
+            'clientId' => $rating->client_id
+         ], 200);
     }
 }

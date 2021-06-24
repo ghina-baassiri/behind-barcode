@@ -161,6 +161,9 @@ class CommonAPIsController extends Controller
     public function product($barcode) {
 
         $product = Product::where('barcode', $barcode)->first();
+        $product['unit'] = Unit::where('id' , $product->unit_id )->pluck('name')->first();
+        $product['category'] = Category::where('id' , $product->category_id )->pluck('name')->first();
+
         return response()->json([ 'product' => $product ], 200);
     }
     
