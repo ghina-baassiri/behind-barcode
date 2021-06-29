@@ -1,22 +1,22 @@
 import React from 'react';
-import {StyleSheet, Text, View, Image, TouchableOpacity} from 'react-native';
+import {Text, View, Image} from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import AccountDetailsScreen from '../screens/AccountDetailsScreen';
+import NotificationsScreen from '../screens/NotificationsScreen';
 import BarcodeScannerScreen from '../screens/BarcodeScannerScreen';
 import ProductStack from '../navigation/ProductStack';
 import MarketStack from '../navigation/MarketStack';
-import ChatScreen from '../screens/ChatScreen';
-import MapScreen from '../screens/MapScreen';
+import ChatStack from '../navigation/ChatStack';
 import ChatTabBarButton from '../components/ChatTabBarButton';
-import {BottomTabStyles} from '../utilities/Styles';
 import { windowWidth } from '../utilities/Dimensions';
 
-const HomeTabNavigation = createBottomTabNavigator();
 
 export default function HomeTab() {
+
+  const HomeTabNavigation = createBottomTabNavigator();
+  
   return (
     <HomeTabNavigation.Navigator 
-      initialRouteName='Map'
+      initialRouteName='MarketStack'
       tabBarOptions={{
         showLabel: false,
         style: {
@@ -29,30 +29,8 @@ export default function HomeTab() {
           width: windowWidth,
         }
       }}
-    >
+    >      
       <HomeTabNavigation.Screen 
-        name="Map" 
-        component={MapScreen}
-        options={{
-          tabBarIcon: ({focused}) => (
-            <View style={{alignItems:'center', justifyContent:'center', margin:8}}>
-              <Image
-                source={require('../../assets/market_outline.png')}
-                resizeMode='contain'
-                style={{
-                  width:30,
-                  height:30,
-                  marginBottom:5,
-                  
-                  tintColor: focused ? '#1eb980' : '#748c94'
-                }}
-              />
-              <Text style={{color: focused ? '#1eb980' : '#748c94', fontSize:9, fontWeight:'bold'}}>MARKETS</Text>
-            </View>
-          )
-        }}
-      />
-      {/* <HomeTabNavigation.Screen 
         name="MarketStack" 
         component={MarketStack}
         options={{
@@ -65,15 +43,15 @@ export default function HomeTab() {
                   width:30,
                   height:30,
                   marginBottom:5,
-                  
+                  left:5,
                   tintColor: focused ? '#1eb980' : '#748c94'
                 }}
               />
-              <Text style={{color: focused ? '#1eb980' : '#748c94', fontSize:9, fontWeight:'bold'}}>MARKETS</Text>
+              <Text style={{color: focused ? '#1eb980' : '#748c94', fontSize:8, fontWeight:'bold', left:5,}}>MARKETS</Text>
             </View>
           )
         }}
-      /> */}
+      />
       <HomeTabNavigation.Screen 
         name="ProductStack" 
         component={ProductStack} 
@@ -87,27 +65,28 @@ export default function HomeTab() {
                   width:30,
                   height:30,
                   marginBottom:5,
-                  
+                  left:-3,
                   tintColor: focused ? '#1eb980' : '#748c94'
                 }}
               />
-              <Text style={{color: focused ? '#1eb980' : '#748c94', fontSize:9, fontWeight:'bold'}}>PRODUCTS</Text>
+              <Text style={{color: focused ? '#1eb980' : '#748c94', fontSize:8, fontWeight:'bold', left:-3,}}>PRODUCTS</Text>
             </View>
           )
         }}
       />
 
       <HomeTabNavigation.Screen 
-        name="Chat" 
-        component={ChatScreen}
+        name="ChatStack" 
+        component={ChatStack}
         options={{
-          tabBarIcon: ({focused}) => (
+          tabBarVisible: false,
+          tabBarIcon: () => (
             <Image
               source={require('../../assets/chat.png')}
               resizeMode='contain'
               style={{
-                width:35,
-                height:35,                
+                width:27,
+                height:27,                
                 tintColor: '#fff'
               }}
             />
@@ -131,34 +110,35 @@ export default function HomeTab() {
                 style={{
                   width:30,
                   height:30,
+                  right:-3,
                   marginBottom:5,
                   
                   tintColor: focused ? '#1eb980' : '#748c94'
                 }}
               />
-              <Text style={{color: focused ? '#1eb980' : '#748c94', fontSize:9, fontWeight:'bold', width:90}}>BARCODE SCANNER</Text>
+              <Text style={{color: focused ? '#1eb980' : '#748c94', fontSize:8, fontWeight:'bold', right:-15, width:90}}>SCAN BARCODE</Text>
             </View>
           )
         }}
       />      
       <HomeTabNavigation.Screen 
-        name="AccountDetails" 
-        component={AccountDetailsScreen} 
+        name="Notifications" 
+        component={NotificationsScreen} 
         options={{
           tabBarIcon: ({focused}) => (
-            <View style={{alignItems:'center', justifyContent:'center', margin:8}}>
+            <View style={{alignItems:'center', justifyContent:'center', margin:8, top:1.5}}>
               <Image
-                source={require('../../assets/user_outline.png')}
+                source={require('../../assets/bell_outline.png')}
                 resizeMode='contain'
                 style={{
-                  width:30,
-                  height:30,
+                  width:27,
+                  height:27,
                   marginBottom:5,
-                  
+                  right:5,
                   tintColor: focused ? '#1eb980' : '#748c94'
                 }}
               />
-              <Text style={{color: focused ? '#1eb980' : '#748c94', fontSize:9, fontWeight:'bold'}}>ACCOUNT</Text>
+              <Text style={{color: focused ? '#1eb980' : '#748c94', fontSize:8, fontWeight:'bold', right:5}}>NOTIFICATIONS</Text>
             </View>
           )
         }}

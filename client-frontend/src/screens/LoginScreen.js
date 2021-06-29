@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { Text, View, TextInput, Image, Easing, TouchableOpacity, Animated, StatusBar } from 'react-native';
+import { Text, View, TextInput, TouchableOpacity, Animated } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import axios from 'axios';
 
@@ -8,9 +8,7 @@ import Feather from 'react-native-vector-icons/Feather';
 import { AuthContext } from '../navigation/AuthProvider';
 import { LoginScreenStyles } from '../utilities/Styles';
 import { CommonScreenStyles } from '../utilities/Styles';
-import { animate } from '../utilities/Animation';
-import KeyboardAvoidingWrapper from '../components/KeyboardAvoidingWrapper';
-import * as GoogleSignIn from 'expo-google-sign-in';
+import { ActivityIndicator } from 'react-native-paper';
 
 
 export default function LoginScreen({ navigation }) {
@@ -19,9 +17,9 @@ export default function LoginScreen({ navigation }) {
   const [passwordVisibility, setpasswordVisibility] = useState(true)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [isLoading, setIsLoading] = useState(false);
   const [loggedIn, setLoggedIn] = useState(false)
-  const [isReady, setIsReady] = useState(false)
-  const { setUser, setToken } = useContext(AuthContext)
+  const { user, setUser, setToken } = useContext(AuthContext)
   const [validationMsg, setValidationMsg] = useState({ 'email' :'', 'password': '' })
   const emailformat = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/
 
@@ -33,19 +31,20 @@ export default function LoginScreen({ navigation }) {
 
   // Handle those changes and rerender upon change of user state
   useEffect(() => {
-    console.log('Logged in: ', loggedIn)    
+    // console.log('Logged in: ', loggedIn)    
       setEmail('')
       setPassword('')
       setValidationMsg({ email:'', password: '' })
-      if(loggedIn) 
+      if(user._id) 
         navigation.navigate('HomeTab')
      
-  }, [loggedIn])
+  }, [user])
 
   // Called on Login button press: sends axios login api request  
   const onLoginPress = () => {
     console.log('onLoginPress function')
     console.log('validation: ', validationMsg)
+    
     const data = {
       email: email,
       password: password
@@ -53,12 +52,17 @@ export default function LoginScreen({ navigation }) {
     setValidationMsg({ email:'', password: '' })
 
     axios.post(`http://192.168.43.152:8000/api/login`, data).then(response => {        
-      console.log('SUCCESS: Recieved Login API Response: ', response.data)
+      // console.log('SUCCESS: Recieved Login API Response: ', response.data)
       if(response.status === 200) {
-          const full_name = response.data.client.user.first_name + ' ' + response.data.client.user.last_name
-          setUser(full_name)
+         
+          setUser({
+            name : response.data.client.user.name,
+            _id : response.data.client.user.id,
+            avatar: response.data.client.avatar
+          })
           setToken(response.data.token)
           setLoggedIn(true)    
+          setIsLoading(false)
           navigation.navigate('HomeTab')      
       }
       
@@ -97,7 +101,10 @@ export default function LoginScreen({ navigation }) {
   } 
 
   return (
-    <View style={LoginScreenStyles.container}>
+    
+     <View style={LoginScreenStyles.container}>
+       
+       {isLoading &&  <ActivityIndicator size='large' color='#1eb980' animating={true} style={{opacity:1, position:'absolute', right:0,left:0,top:0,bottom:0 }}/>}
       <View style={LoginScreenStyles.header}>
         <Text style={LoginScreenStyles.text_header}>Welcome to BB</Text>
       </View>
@@ -126,7 +133,7 @@ export default function LoginScreen({ navigation }) {
             />
             : email ?
             <Feather
-              name='check-circle'
+              name='x-circle'
               size={20}
               color='#cf4332'
             />
@@ -202,5 +209,6 @@ export default function LoginScreen({ navigation }) {
           </View>
       </Animated.View>
   </View>
+    
   );
 }

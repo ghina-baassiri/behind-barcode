@@ -1,12 +1,8 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { Text, View, StyleSheet, Image, FlatList, TouchableOpacity, LogBox } from 'react-native';
 import { AuthContext } from '../navigation/AuthProvider';
-import { CommonScreenStyles } from '../utilities/Styles';
 import { ListStyles } from '../utilities/Styles';
-import Feather from 'react-native-vector-icons/Feather';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-// import { NavigationActions } from 'react-navigation';
-
 import axios from 'axios'
 
 export default function ProductMarketsScreen({route, navigation}) {
@@ -16,8 +12,7 @@ export default function ProductMarketsScreen({route, navigation}) {
   const [markets, setMarkets] = useState([]);
 
   const product = route.params.product
-  let market = {}
-
+  console.log('product markets screen: ', product)
 
   function fetchProductMarkets(product) {
     axios.get(`http://192.168.43.152:8000/api/productMarkets/${product.barcode}`, {
@@ -29,7 +24,7 @@ export default function ProductMarketsScreen({route, navigation}) {
           return
         }      
     }).catch(err => {
-      console.log('The Error: ', err)
+      console.log('Fetch Product Markets Error: ', err)
       
     })   
   }
@@ -41,32 +36,56 @@ export default function ProductMarketsScreen({route, navigation}) {
 
   return (
     <View style={{flex:1, alignItems:'center', justifyContent:'center' }}>
+      <View style={{...styles.header, flexDirection:'row'}}>    
+          <TouchableOpacity onPress={() => navigation.navigate('ProductsScreen')} style={{position:'absolute', left:10}} >
+          <MaterialIcons
+            name='navigate-before'
+            color='#fff'
+            size={22}                      
+          />
+        </TouchableOpacity>        
+        {/* <Text style={styles.title}>{product.brand}</Text> */}
+      </View>
       {/* Product */}
-      <View style={ListStyles.mainItemWrapper}>                           
+      <View style={{...ListStyles.mainItemWrapper, paddingHorizontal:15, marginTop:360}}>                           
           <Image
             source={{uri:product.image}} 
             resizeMode='contain'
-            style={ styles.image }
+            style={styles.image}
           />   
-          <Text style={{ color:'#000', fontSize:20, marginTop:7, fontWeight:'bold'}}>{product.brand}</Text>
-      
-          <Text style={{marginTop:4}}>{product.category}</Text>
-
-          <Text style={{marginTop:4}}>{product.size + ' ' + product.unit}</Text>   
+          <Text style={{ color:'#000', fontSize:16, marginBottom:10, marginTop:5, fontWeight:'bold',flexWrap: 'wrap', textAlign: 'center', alignSelf: 'center'}}>{product.brand}</Text>
+          <Text style={{color:'#000', fontSize:13, marginBottom:2, alignSelf:'center'}}>{product.category}</Text>          
+          <Text style={{fontSize:13, textAlign:'center'}}>{product.size} {product.unit}</Text>    
+          <TouchableOpacity activeOpacity={.9} style={{marginTop:10, right: 5}} onPress={() => navigation.navigate('Map',{address:market.address})}>
+            <Image
+              source={require('../../assets/chat.png')}
+              resizeMode='contain'
+              style={styles.icon}
+            />
+          </TouchableOpacity>
       </View>
 
       {/* Price per market */}
-        <View style={{...ListStyles.listWidth, flexDirection:'row',  justifyContent: 'center', borderWidth:1, borderColor:'#d4d4d4', borderTopLeftRadius:10, borderTopRightRadius: 10, backgroundColor:'#1eb980', height:35,  elevation:3 }}>
-          <Text style={{textAlign: 'center', alignSelf: 'center', fontSize:18 , fontWeight:'bold', borderRightWidth:1, width:'65%',  borderColor:'#d4d4d4', color:'#fff' }} >Market</Text>
-          <Text style={{textAlign: 'center', alignSelf: 'center', fontSize:18,  fontWeight:'bold', width:'35%', color: '#fff' }} >Price</Text>
+      
+      {!markets ? 
+      
+        <View style={{alignItems:'center'}}>
+          <Image source={require('../../assets/success.jpg')} style={{tintColor:'#1eb980', marginVertical:10, height:150, width:150}}/>
         </View>
-        <FlatList
-          keyExtractor={(item, index) => index.toString()}
-          data={markets}  
-            renderItem={item => {
-              return (
-                <View style={{...ListStyles.listWidth, flexDirection:'row', textAlign: 'center', alignItems:'center', justifyContent: 'center', borderWidth:1, borderColor:'#d4d4d4', backgroundColor:'#fff', height:60 }}>
+        :
+        <View style={{ alignItems:'center', justifyContent: 'center' }}>
+          <View style={{...ListStyles.listWidth, flexDirection:'row',  justifyContent: 'center', borderWidth:1, borderColor:'#d4d4d4', borderTopLeftRadius:10, borderTopRightRadius: 10, backgroundColor:'#1eb980', height:35,  elevation:3 }}>
+            <Text style={{textAlign: 'center', alignSelf: 'center', fontSize:18 , fontWeight:'bold', borderRightWidth:1, width:'65%',  borderColor:'#d4d4d4', color:'#fff' }} >Market</Text>
+            <Text style={{textAlign: 'center', alignSelf: 'center', fontSize:18,  fontWeight:'bold', width:'35%', color: '#fff' }} >Price</Text>
+          </View>
+          <FlatList
+            keyExtractor={(item, index) => index.toString()}
+            data={markets}  
+              renderItem={item => {
+                return (
+                  <View style={{...ListStyles.listWidth, flexDirection:'row', textAlign: 'center', alignItems:'center', justifyContent: 'center', borderWidth:1, borderColor:'#d4d4d4', backgroundColor:'#fff', height:50 }}>
                     <TouchableOpacity 
+                      activeOpacity={.9}
                       style={{ alignSelf: 'center', width:ListStyles.listWidth.width*0.64,  justifyContent: 'center', height:'100%', paddingHorizontal:4 }}
                       onPress={() => {
                         navigation.navigate('MarketStack', {screen: 'MarketProducts', params: {market: item.item}})}}
@@ -77,11 +96,15 @@ export default function ProductMarketsScreen({route, navigation}) {
                       <Text style={{ textAlign: 'center', fontSize:16, }} >{item.item.price}</Text>
                     </View>
                   </View>
-              )}}                      
-              showsVerticalScrollIndicator={false}              
-              contentContainerStyle={{paddingTop:1,paddingBottom:65}}
-        />
+                )}}                      
+                showsVerticalScrollIndicator={false}              
+                contentContainerStyle={{paddingTop:1,paddingBottom:65}}
+          />
+        </View>
+      }
       </View>
+    
+    
   )
 }
 
@@ -90,5 +113,23 @@ const styles = StyleSheet.create({
   image: {
     width:120, 
     height:120
-  }
+  },
+  header: {
+      width: '100%',
+      height:30,
+      justifyContent:'center',
+      backgroundColor:'#1eb980',
+      alignItems: 'center',
+  }, 
+  title: {
+    justifyContent: 'center',
+    color:'#fff',
+    fontSize:22,
+  },
+  icon: {
+    width:25, 
+    height:25,
+    marginLeft:10,
+    tintColor: '#1eb980'
+  } 
 })
