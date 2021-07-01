@@ -1,37 +1,51 @@
 import React, { useState, useEffect, useLayoutEffect, useContext, useCallback } from 'react';
-import { Text, View, StyleSheet, StatusBar, TouchableOpacity, LogBox } from 'react-native';
+import { Text, View, StyleSheet, StatusBar, TouchableOpacity, LogBox, Image } from 'react-native';
 import { AuthContext } from '../navigation/AuthProvider';
 import { windowHeight, windowWidth } from '../utilities/Dimensions';
 import Icon from 'react-native-vector-icons/Ionicons';
 import Feather from 'react-native-vector-icons/Feather';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import UploadImage from '../components/CameraImageUpload';
 import { GiftedChat, Bubble, Send } from 'react-native-gifted-chat';
 import {firebaseConfig} from '../utilities/config';
 import firebase from 'firebase';
+import { set } from 'react-native-reanimated';
 require('firebase/firestore');
 
 export default function ChatScreen({route, navigation}) {
-  LogBox.ignoreAllLogs();
-
-  const [messages, setMessages] = useState([]);
-  const { user, token } = useContext(AuthContext)
 
   if (!firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
   } else {
     firebase.app(); 
   }
+  
+  LogBox.ignoreAllLogs();
+  const chatRoom = route.params.chatRoom
+  const title = route.params.title
+  console.log('title', title)
+  console.log('room', route.params.chatRoom)
+  console.log('image ',  route.params.image)
+
+
+  
+  const [imageUploaded, setImageUploaded] = useState(null);
+  const [messages, setMessages] = useState([]);
+  const [upload, setUpload] = useState(false);
+  const { user, token } = useContext(AuthContext)
+
 
   const db = firebase.firestore();
 
   useEffect(() => {
     console.log('USER', user)
+    setUpload(false)
     db
-    .collection('groupChat')
+    .collection(route.params.chatRoom)
     .onSnapshot(collection => {
       db
-      .collection('groupChat')
+      .collection(route.params.chatRoom)
       .orderBy('createdAt', 'desc')
       .get()
       .then(snapshot => {
@@ -45,7 +59,6 @@ export default function ChatScreen({route, navigation}) {
             avatar: doc.data().user.avatar
           }
         }))
-        console.log('msgs-- ', msgs)
         setMessages(msgs)
       })
     });
@@ -64,15 +77,62 @@ export default function ChatScreen({route, navigation}) {
     console.log('user',user)
     console.log('message',messages[0])
 
-
+    //firebase
     db
-    .collection('groupChat')
+    .collection(route.params.chatRoom)
     .add({
       _id,
       createdAt,
       text,
-      user
+      user,
     })
+
+    if(route.params.chatRoom !== 'groupChat') {
+      console.log('inside if')
+
+      db
+        .doc(`subscription/${user._id}`)
+        .get()
+        .then((snapshot) => {
+          if(snapshot.exists){
+            console.log('exists')
+            let counter = 0;
+            let chats = snapshot.data().productChats
+
+
+            chats.forEach(chat => {
+              if(chat.chatRoom === route.params.chatRoom)
+                counter ++
+            });
+            if(counter === 0) {
+              chats.push({
+                  chatRoom: route.params.chatRoom,
+                  title: route.params.title,
+                  image: route.params.image,
+                })
+              // Add to firestore
+              db
+              .doc(`subscription/${user._id}`)
+              .set({              
+                  productChats: chats
+              })
+           }
+          } else {
+            console.log('doesnt exist')
+            db
+            .doc(`subscription/${user._id}`)
+            .set({
+              productChats: [{
+                chatRoom: route.params.chatRoom,
+                title: route.params.title,
+                image: route.params.image,
+              }]
+            })
+          }
+
+
+          })
+   }
   }, [])
 
 
@@ -129,46 +189,59 @@ export default function ChatScreen({route, navigation}) {
 
   function renderActions() {
     return (
-        <Feather
-          style={styles.uploadImage}
-          // onPress={uploadImage}
+      <TouchableOpacity onPress={()=>setUpload(true)} style={styles.uploadImage}>
+        <Feather                
           name='image'
-          size={25}
-          color='#ccc'
+          size={27}
+          color='#000'
         />
+      </TouchableOpacity>
     );
   }
 
 
   return (
     <View style={styles.container}>
-      {/* <View style={{...styles.header, flexDirection:'row'}}>    
-          <TouchableOpacity onPress=c} style={{position:'absolute', left:10}} >
+      {/* <View style={{flexDirection:'row', zIndex:1, backgroundColor:'red', position:'absolute', top:-45, alignSelf:'center'}}> */}
+        <Text style={{fontSize:20, color:'#fff', zIndex:1, position:'absolute', top:-43, left: 38}}>{route.params.title}</Text>
+        <View style={{ zIndex:1, position:'absolute'}}>
+        { route.params.image ?
+            <Image
+              source={{uri:route.params.image}}
+              resizeMode='contain'
+              style={{width:45, height:45, borderRadius:500, right:-300, top:-50,}}                 
+            /> 
+          :
           <MaterialIcons
-            name='navigate-before'
+            name='groups'
             color='#fff'
-            size={22}                      
+            size={40}
+            style={{right:30, top:-48,}}
           />
-        </TouchableOpacity>        
-        <Text style={styles.title}>BB Chat Zone</Text>
-      </View> */}
+        }
+        </View>
+      {/* </View> */}
+      
+      {upload ? <UploadImage setUpload={setUpload} setImageUploade={setImageUploaded}/> :       
+
       <GiftedChat
         messages={messages}
         onSend={messages => onSend(messages)}
-        user={{_id: user._id, name: user.name, avatar: user.avatar ? user.avatar : 'https://firebasestorage.googleapis.com/v0/b/behind-barcode.appspot.com/o/images%2Fusers%2Fcircular-modern-red-skype-icon-skype-profile-png-512_512.png?alt=media&token=ab37283c-393f-4a1d-88ba-49e953926d95'}}
+        user={{_id: user._id, name: user.name}}
         renderBubble={renderBubble}
         alwaysShowSend
         isTyping
         // loadEarlier
         // isLoadingEarlier 
         renderSend={renderSend}
-        renderActions={renderActions}
+        // renderActions={renderActions}
         showAvatarForEveryMessage
         // renderTicks={message => renderTicks(message)}
         scrollToBottom
         scrollToBottomComponent={scrollToBottomComponent}
         textInputStyle = {{paddingLeft:5, paddingRight:35, }}
       />
+    }
     </View>
   );
 }
@@ -239,6 +312,7 @@ const styles = StyleSheet.create({
       textDecorationLine:'underline'
     },
     uploadImage: {
+      zIndex:1,
       position: 'absolute',
       right: 55,
       top:10,

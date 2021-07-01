@@ -1,63 +1,110 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { AuthContext } from '../navigation/AuthProvider';
 import { View, Text, TouchableOpacity, FlatList } from 'react-native';
-import { CommonScreenStyles } from '../utilities/Styles';
+import { CommonScreenStyles, ListStyles } from '../utilities/Styles';
+import Feather from 'react-native-vector-icons/Feather';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import {firebaseConfig} from '../utilities/config';
+import firebase from 'firebase';
+require('firebase/firestore');
 
-export default function ChatList({text, navigation}) {
+
+export default function ChatList({route, navigation}) {
+
+  if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+  } else {
+    firebase.app(); 
+  }
 
   const [chats, setChats] = useState([]);
-  const { user, token } = useContext(AuthContext)
+  const { user, token } = useContext(AuthContext);
+
+  const db = firebase.firestore();
+
+  useEffect(() => {
+      db
+      .doc(`subscription/${user._id}`)
+      .onSnapshot((doc) => {
+
+        if(doc.exists){
+          console.log("Current data: ",  doc.data().productChats);
+          console.log('Type test:', doc.data().productChats[0]);
+          setChats(doc.data().productChats)
+          // doc.data().productChats.forEach(chat=>{
+            // getLastMessage(chat.chatRoom)
+          // })
+        }
+      });
+
+
+
+    //wholeDB.onsnapshot(=>..... 
+    // for(let i of subs) {
+      //   db.collection(i.chatRoom).get((doc) => {
+      //     getLastMessage(doc);
+      //   })
+      // }
+    // )
+
+  }, [])
+
+
+  const getLastMessage = (collectionName) => {
+    db
+      .collection(collectionName)
+      .orderBy('createdAt', 'asc')
+      .get()
+      .then(snapshot => {
+        let lastMessage = snapshot.docs[-1].data()
+        console.log('last Message', lastMessage)
+      })
+       
+  }
 
   return (
-    <View style={{flex:1, alignItems:'center'}}>
+    <View style={{flex:1}}>
       {/* <Text>Hi</Text> */}
-         <TouchableOpacity activeOpacity={.7} onPress={() => navigation.navigate('Chat')} style={{elevation:10, borderRadius:10, paddingVertical:20, paddingHorizontal:10, width:'90%', backgroundColor:'#1eb980', marginVertical:20}}>
-            <Text style={{fontSize:24, textAlign:'center', color:'#fff'}}>
-                Group Chat
-            </Text>
+         <TouchableOpacity onPress={() => navigation.navigate('ChatList')} style={{position:'absolute', zIndex:1, top:-40, right:-1}}>      
+            <Feather
+                name='search'
+                size={25}
+                color='#fff'
+                style={{right:24}}
+            />
+          </TouchableOpacity>
+         <TouchableOpacity activeOpacity={.7} onPress={() => navigation.navigate('Chat', {title:'Group Chat', chatRoom:'groupChat', image:''})} 
+          style={{elevation:5, backgroundColor:'#fff', height:70, width:70, borderRadius:60, justifyContent:'center', alignItems:'center', margin:20, right:0,bottom:0, position:'absolute'}}>
+            <MaterialIcons
+              name='groups'
+              color='#1eb980'
+              size={50}
+            />
         </TouchableOpacity>
-        {/*<FlatList
+      <View style={CommonScreenStyles.container}>
+        {/* {console.log('CHATS ', chats)} */}
+        {chats &&
+        <FlatList
           bounces={true}
-          keyExtractor={(item, index) => index.toString()}
+          keyExtractor={item => item.chatRoom}
           data={chats}        
           renderItem={item => {
-            
+            console.log('ITEM ',item)
             return (
                 <TouchableOpacity    
                   activeOpacity={.9}               
                   style={ ListStyles.itemWrapper }
-                  onPress={() => navigation.navigate('ProductMarkets', { product: item.item})}
+                  onPress={() => navigation.navigate('Chat', { title: item.item.title, chatRoom: item.item.chatRoom, image: item.item.image})}
                 >
-                  <View style={{ elevation:3, flexDirection:'row', padding: 10, alignContent:'center', borderColor: '#1eb980', borderWidth:1, borderRadius:20, backgroundColor:'#fff'}}>
-                      <Svg width={90} height={90} style={{ paddingVertical:10, marginRight:5}}>
-                          <SvgImage
-                              href={item.item.image}
-                              width={80}
-                              height={80}                                
-                          />
-                      </Svg>
-                      <View >
-                          <Text style={{ color:'#000', fontSize:16, marginTop:7, fontWeight:'bold'}}>{item.item.brand}</Text>
-                      
-                          <Text style={{paddingVertical:1}}>{item.item.category}</Text>
-
-                          <Text style={{paddingVertical:1}}>{item.item.size + ' ' + item.item.unit}</Text>
-                      </View>  
-                      <View style={{position:'absolute', right:3, top:83}}>
-                        <MaterialIcons
-                          name='navigate-next'
-                          color='#000'
-                          size={20}
-                        />
-                      </View> 
-
-                  </View>
+                  <Text>{item.item.title}</Text>
                 </TouchableOpacity>
                   )}}
                 
                 showsVerticalScrollIndicator={false}              
                 contentContainerStyle={{paddingTop:5,paddingBottom:65}}
-                /> */}
+                />
+            }
+      </View>
     </View>
 
   );
