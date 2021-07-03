@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { Text, View, TouchableOpacity, Image, FlatList, TextInput, StyleSheet } from 'react-native';
+import { Text, View, TouchableOpacity, FlatList, TextInput, StyleSheet } from 'react-native';
 import { AuthContext } from '../navigation/AuthProvider';
-import { CommonScreenStyles, LoginScreenStyles } from '../utilities/Styles';
+import { CommonScreenStyles } from '../utilities/Styles';
 import { ListStyles } from '../utilities/Styles';
 import { windowWidth } from '../utilities/Dimensions';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
@@ -21,7 +21,6 @@ export default function ProductsScreen({ navigation }) {
 
 
   const { token } = useContext(AuthContext)
-  let product = {}
 
   const fetchAllProducts = () => {
     axios.get(`http://192.168.43.152:8000/api/allProducts`, {
@@ -64,6 +63,7 @@ export default function ProductsScreen({ navigation }) {
   }
 
   useEffect(() => {
+
     fetchAllProducts()       
   }, [])
 
@@ -86,26 +86,27 @@ export default function ProductsScreen({ navigation }) {
           keyExtractor={(item, index) => index.toString()}
           data={filteredProducts}        
           renderItem={item => {
-            product = item.item
+            
             return (
-                <TouchableOpacity                   
+                <TouchableOpacity    
+                  activeOpacity={.9}               
                   style={ ListStyles.itemWrapper }
-                  onPress={() => navigation.navigate('ProductMarkets', { product: product})}
+                  onPress={() => navigation.navigate('ProductMarkets', { product: item.item})}
                 >
-                  <View style={{ elevation:3, flexDirection:'row', padding: 10, alignContent:'center', borderColor: '#1eb980', borderWidth:1.5, borderRadius:20, backgroundColor:'#fff'}}>
+                  <View style={{ elevation:3, flexDirection:'row', padding: 10, alignContent:'center', borderColor: '#1eb980', borderWidth:1, borderRadius:20, backgroundColor:'#fff'}}>
                       <Svg width={90} height={90} style={{ paddingVertical:10, marginRight:5}}>
                           <SvgImage
-                              href={product.image}
+                              href={item.item.image}
                               width={80}
                               height={80}                                
                           />
                       </Svg>
                       <View >
-                          <Text style={{ color:'#000', fontSize:16, marginTop:7, fontWeight:'bold'}}>{product.brand}</Text>
+                          <Text style={{ color:'#000', fontSize:16, marginTop:7, fontWeight:'bold'}}>{item.item.brand}</Text>
                       
-                          <Text style={{paddingVertical:1}}>{product.category}</Text>
+                          <Text style={{paddingVertical:1}}>{item.item.category}</Text>
 
-                          <Text style={{paddingVertical:1}}>{product.size + ' ' + product.unit}</Text>
+                          <Text style={{paddingVertical:1}}>{item.item.size + ' ' + item.item.unit}</Text>
                       </View>  
                       <View style={{position:'absolute', right:3, top:83}}>
                         <MaterialIcons
