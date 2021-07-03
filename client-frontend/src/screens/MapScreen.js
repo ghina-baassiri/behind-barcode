@@ -1,17 +1,18 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { Text, View, Image } from 'react-native';
+import { Text, View, LogBox } from 'react-native';
 import { AuthContext } from '../navigation/AuthProvider';
 import MarketCallout from '../components/MarketCallout';
 import MapView, {PROVIDER_GOOGLE, Marker, Callout} from 'react-native-maps';
 import * as Location from 'expo-location';
-import { MapStyles } from '../utilities/Styles';
+import { MapStyles, CommonScreenStyles } from '../utilities/Styles';
 import Svg from 'react-native-svg';
 import {Image as SvgImage}  from 'react-native-svg';
-
 import axios from 'axios';
 
 
-export default function MapScreen() {
+export default function MapScreen({navigation}) {
+    LogBox.ignoreAllLogs();
+
     const [initialRegion, setInitialRegion] = useState({
         latitude: 33.84,
         longitude: 35.6,
@@ -20,9 +21,10 @@ export default function MapScreen() {
     });
     const [errorMsg, setErrorMsg] = useState(null);
     const [markets, setMarkets] = useState([]);
+    const [market, setMarket] = useState([]);
     const [showMarketCallout, setShowMarketCallout] = useState(false);
-
-    const { token } = useContext(AuthContext)
+    const [tracksViewChanges, setTracksViewChanges] = useState(true);
+    const { user, token } = useContext(AuthContext)
 
     async function getCurrentLocation() {
         try {
@@ -33,16 +35,16 @@ export default function MapScreen() {
                 setInitialRegion({
                     latitude: location.coords.latitude,
                     longitude: location.coords.longitude,
-                    latitudeDelta:0.8,
-                    longitudeDelta: 0.8
+                    latitudeDelta:0.7,
+                    longitudeDelta: 0.7
                 })
             }
             let location = await Location.getCurrentPositionAsync({})
             setInitialRegion({
                 latitude: location.coords.latitude,
                 longitude: location.coords.longitude,
-                latitudeDelta:0.8,
-                longitudeDelta: 0.8
+                latitudeDelta:0.7,
+                longitudeDelta: 0.7
             })
 
         } catch (error) {
@@ -57,11 +59,23 @@ export default function MapScreen() {
           }})
         .then(response => {        
           setMarkets(response.data.markets)
+          
           return
         })
         .catch(err => {
         console.log('The Error: ', err)      
         })   
+    }
+
+    const onMarkerPress = (market) => {
+        console.log('pressed',market,'show',showMarketCallout)
+        setMarket(market)
+        setShowMarketCallout(true)
+    }
+
+    const stopRendering = () =>
+    {
+        setTracksViewChanges(false)
     }
 
     useEffect(() => {
@@ -70,37 +84,36 @@ export default function MapScreen() {
     }, [])
 
     return (
+        <View style={CommonScreenStyles.container}>
+        {showMarketCallout ? <MarketCallout key={index=>index} user={user} showMarketCallout={showMarketCallout} setShowMarketCallout={setShowMarketCallout} market={market} navigation={navigation}/> : null}        
             
         <MapView 
-            provider={PROVIDER_GOOGLE}
+            // provider={PROVIDER_GOOGLE}
             style={MapStyles.map} 
             loadingEnabled={true}
             followUserLocation={true}
             showsUserLocation={true}
             showsMyLocationButton={true}
             zoomEnabled={true}
-            initialRegion={initialRegion}            
+            initialRegion={initialRegion}        
+            tracksViewChanges={tracksViewChanges}    
         >
             
             {markets.map(market => (
-              <>
-                {console.log('------------------market:', market)}
-                
+              <View  key={market.id}>                
                 <Marker
-                    key={market.id}
                     coordinate={{
                       longitude: market.address.longitude,
                       latitude: market.address.latitude,
                     }}
-                    onPress={()=>{setShowMarketCallout(true)}}
+                    onPress={()=>{onMarkerPress(market)}}
                 >
-                    {showMarketCallout ? <MarketCallout market={market}/> : null}
                     <View style={{ flexDirection:'row', alignContent:'center', justifyContent:'center',backgroundColor: '#1eb980', borderRadius:20,  }}>
-                        <Svg width={30} height={30} style={{ left: -1}}>
+                        <Svg width={30} height={30} style={{ left: -1}} onLoad={stopRendering}>
                             <SvgImage
                                 href={market.logo}
                                 width={30}
-                                height={30}                                
+                                height={30}                 
                             />
                         </Svg>
                         <Text
@@ -113,15 +126,13 @@ export default function MapScreen() {
                                 
                             }}
                         >{market.name}</Text>       
-
                     </View>
-                    {/* <Callout tooltip>
-                        <MarketCallout/>
-                    </Callout>       */}
             </Marker>
-            </>
+            </View>
             ))}
 
         </MapView>
+        </View>
     );
 }
+
