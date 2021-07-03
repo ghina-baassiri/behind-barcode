@@ -216,7 +216,7 @@ export default function ChatScreen({route, navigation}) {
             name='groups'
             color='#fff'
             size={40}
-            style={{right:30, top:-48,}}
+            style={{right:-300, top:-48,}}
           />
         }
         </View>

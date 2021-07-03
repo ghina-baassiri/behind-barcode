@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, TouchableHighlight, Animated, StatusBar, Image, FlatList} from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, Platform, TouchableHighlight, Animated, StatusBar, Image, FlatList} from 'react-native';
 import { AuthContext } from '../navigation/AuthProvider';
 import { SwipeListView } from 'react-native-swipe-list-view';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {firebaseConfig} from '../utilities/config';
 import firebase from 'firebase';
 require('firebase/firestore');
-import axios from 'axios'
+import axios from 'axios';
+import { windowHeight, windowWidth } from '../utilities/Dimensions';
 
 export default function NotificationsScreen({navigation}) {
 
@@ -39,12 +40,10 @@ export default function NotificationsScreen({navigation}) {
           title: doc.data().title,
         }))
         setMessages(msgs)
-
-
       })
-    });
-  
+    });  
   }, [])
+
 
   useEffect(() => {
     messages && fetchAllProducts();
@@ -54,11 +53,13 @@ export default function NotificationsScreen({navigation}) {
     console.log('/////Products', products);
   }, [products])
 
+
+
   const fetchAllProducts = () => {
     axios.get(`http://192.168.43.152:8000/api/allProducts`, {
       headers: {
         'Authorization': `Bearer ${token}`
-      }})
+    }})
     .then(response => {        
       let items_temp = {};
       for(let i=0; i<response.data.products.length; i++){
@@ -69,14 +70,11 @@ export default function NotificationsScreen({navigation}) {
       return
     })
     .catch(err => {
-    console.log('The Error: ', err)      
+      console.log('The Error: ', err)      
     })   
   }
 
-
-
-
-  const fetchProduct = (barcode) => {
+ /*const fetchProduct = (barcode) => {
     console.log('fetch')
       axios.get(`http://192.168.43.152:8000/api/product/${barcode}`, {
       headers: {
@@ -88,265 +86,124 @@ export default function NotificationsScreen({navigation}) {
       }
     })
     .catch(err => {
-      // alert('Scan again')
-      // setFailed(true) 
       console.log('Fetch Product Error: ', err)      
     })
     return data;   
-  } 
+  }*/
  
   return (
-    <View style={{flex:1, top:100, left:100}}>
-  <FlatList
-    horizontal={false}
-    data={messages}
-    keyExtractor={(item) => JSON.stringify(item.createdAt)}
-    renderItem={({item}) => ((
-      <>
-      {console.log('item----------', item)}
-        { products &&
-        <TouchableOpacity           
-            onPress={() => {              
-              navigation.navigate('ProductStack', {screen: 'ProductMarkets', params: {product: products[item.barcode]}})
-
-            }}>
-                
-                <View style={styles.convBoxLeft}>
-                    <Image
-                        style={styles.postPhoto} 
-                        source={{uri: products[item.barcode].image}} 
-                        />
+    <View styles={styles.Container}>
+      <View style={styles.header}>
+        <Text style={styles.headerText}>
+          Notifications
+        </Text>
+      </View>
+      <FlatList
+        horizontal={false}
+        data={messages}
+        keyExtractor={(item) => JSON.stringify(item.createdAt)}
+        showsVerticalScrollIndicator={false}              
+        contentContainerStyle={{paddingTop:0, marginHorizontal:20,paddingBottom:65}}
+        renderItem={({item}) => ((
+        <>
+          { products &&
+            <TouchableOpacity       
+              style={styles.Card}    
+              onPress={() => { navigation.navigate('ProductStack', {screen: 'ProductMarkets', params: {product: products[item.barcode]}})}}
+            >
+              <View style={styles.UserInfo}>
+                <View style={styles.UserImgWrapper}>
+                  <Image
+                    style={styles.UserImg} 
+                    source={{uri: products[item.barcode].image}} 
+                  />
                 </View>
-
-                <View style={styles.convBoxRight}>
-
-                    <Text style={styles.topMessageAdoption}>
-                      {item.title}
-                    </Text>
-
-                    <View style={{flexDirection: 'row'}}>
-                        <Text style={styles.messageSeenText}>
-                           {/* {messageFormat(item.details)} */}
-                        </Text> 
-                    </View>
-
-
+                <View style={styles.TextSection}>
+                  <View style={styles.UserInfoText}>
+                    <Text style={styles.UserName}>{item.title}</Text>
+                    <Text style={styles.PostTime}>2:00 PM</Text>
                   </View>
-
-                  <Text style={styles.adoptionTime}>
-                  {/* {timeFormat(item.createdAt)} */}
-                    </Text>
-
-
-        </TouchableOpacity>
-    }
+                    <Text style={styles.MessageText}>{item.details}</Text>
+                </View>
+              </View>
+            </TouchableOpacity>
+          }
         </>
-    ))} />
-</View>
+      ))}/>
+    </View>
   );
 }
 
 
 const styles = StyleSheet.create({
-  root: {
-    backgroundColor: "#FFFFFF"
+  header: {
+    alignItems:'center',
+    justifyContent:'center',
+    height:85,
+    backgroundColor:'#1eb980',
+    marginTop:0,
+    paddingTop:0,
+    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0 
   },
-  container: {
-    padding: 16,
+  headerText: {
+    fontSize:24,
+    color:'#fff'
+  },
+  Container: {
+    flex: 1,
+    paddingLeft: 20,
+    paddingRight: 20,
+    alignItems: 'center',
+    backgroundColor: '#ffffff'
+  },
+  Card: {
+    width: '100%'
+  },
+  UserInfo: {
     flexDirection: 'row',
+    justifyContent: 'space-between'
+  },
+  UserImgWrapper: {
+    paddingTop: 15,
+    paddingBottom: 15
+  },
+  UserImg: {
+    width: 55,
+    height: 55,
+    borderRadius: 25
+  },
+  TextSection: {
+    flexDirection: 'column',
+    justifyContent: 'center',
+    padding: 15,
+    paddingLeft: 0,
+    marginLeft: 10,
+    width: 300,
     borderBottomWidth: 1,
-    borderColor: "#FFFFFF",
-    alignItems: 'flex-start'
+    borderBottomColor: '#cccccc'
   },
-  avatar: {
-    width:50,
-    height:50,
-    borderRadius:25,
-  },
-  text: {
-    marginBottom: 5,
+  UserInfoText: {
     flexDirection: 'row',
-    flexWrap:'wrap'
+    // justifyContent: 'flex-end',
+    width:'100%',
+    marginBottom: 5
   },
-  content: {
-    flex: 1,
-    marginLeft: 16,
-    marginRight: 0
+  UserName: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    fontFamily: 'Lato-Regular'
   },
-  mainContent: {
-    marginRight: 60
+  PostTime: {
+    fontSize: 12,
+    color: '#666',
+    position:'absolute',
+    justifyContent: 'flex-end',
+    right:35
   },
-  timeAgo:{
-    fontSize:12,
-    color:"#696969"
-  },
-  name:{
-    fontSize:16,
-    color:"#1eb980"
-  },
-  rowFront: {
-    backgroundColor: '#FFF',
-    borderRadius: 5,
-    margin: 2,
-    shadowColor: '#999',
-    shadowOffset: {width: 0, height: 1},
-    shadowOpacity: 0.8,
-    shadowRadius: 2,
-    elevation: 5,
-  },
-  rowFrontVisible: {
-    backgroundColor: '#FFF',
-    borderRadius: 5,
-    height: 60,
-    padding: 10,
-    marginBottom: 15,
-  },
-  rowBack: {
-    // alignItems: 'center',
-    backgroundColor: '#DDD',
-    flex: 1,
-    flexDirection: 'row',
-    // justifyContent: 'space-between',
-    // paddingLeft: 15,
-    margin: 5,
-    marginBottom: 15,
-    // borderRadius: 15,
-  },
-  backRightBtn: {
-    // alignItems: 'flex-end',
-    bottom: 0,
-    justifyContent: 'center',
-    position: 'absolute',
-    top: 0,
-    right:0,
-    width:60,
-    borderRadius:40
-    // paddingRight: 17,
-  },
-  backRightBtnLeft: {
-    height:90,
-    width:60,
-    backgroundColor: '#1eb980',
-    right: -227,
-    borderRadius:10
-
-  },
-  backRightBtnRight: {
-    height:90,
-    width:60,
-    backgroundColor: '#cf4332',
-    right: -228,
-    borderRadius:10
-
-    // borderTopRightRadius: 5,
-    // borderBottomRightRadius: 5,
-  },
-  trash: {
-    height: 27,
-    width: 27,
-    right:-16,
-    top:30
-
-  },
-
-
-
-
-  backgroundContainer: {
-    flex: 1,
-    marginTop: 25,
-    // justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'green'
-},
-adoptionBox: {
-    height: 105,
-    width: '100%',
-    paddingHorizontal: 7,
-    // paddingVertical: 5,
-    alignItems: 'center',
-    flexDirection: 'row',
-    borderBottomWidth: 0.2,
-    borderBottomColor: 'red',
-    backgroundColor: 'yellow'
-},
-bottomBar: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'white',
-    borderTopStartRadius: 10,
-    borderTopEndRadius: 10,
-    width: '100%',
-    height: 60
-},
-convBoxLeft: {
-    marginRight: 10,
-    bottom: 10
-},
-convBoxRight: {
-    bottom: 10
-},
-convBox: {
-    height: 85,
-    width: '100%',
-    paddingHorizontal: 7,
-    // paddingVertical: 5,
-    alignItems: 'center',
-    flexDirection: 'row',
-    borderBottomWidth: 0.2,
-    borderBottomColor: 'blue',
-    backgroundColor: 'white'
-},
-list: {
-    flex: 1,
-    width: '100%',
-    // marginBottom: 20,
-},
-topMessageComment: {
-    fontSize: 15,
-    marginBottom: 3,
-},
-topMessageAdoption: {
-    fontSize: 15,
-    marginTop: 25,
-    marginBottom: 3,
-},
-messageSeenText: {
+  MessageText: {
     fontSize: 14,
-    fontStyle: 'italic',
-},
-adoptionTime: {
-    fontSize: 11,
-    width: 100,
-    left: 187,
-    top: 95,
-    position: 'absolute',
-},
-commentTime: {
-    fontSize: 11,
-    width: 100,
-    left: 187,
-    top: 53,
-    position: 'absolute',
-},
-topBar: {
-    height: 50,
-    width: '100%',
-    paddingLeft: 15,
-    // justifyContent: 'center',
-    alignItems: 'center',
-    borderBottomWidth: 1,
-    backgroundColor: 'white',
-    borderBottomColor: 'pink',
-    flexDirection: 'row'
-},
-topBarText: {
-    fontSize: 19
-},
-postPhoto: {
-    aspectRatio: 1,
-    width: 50,
-    borderRadius: 10
-}
+    color: '#333333',
+    flexWrap: 'wrap',
+    width:windowWidth*0.7
+  } 
 }); 
