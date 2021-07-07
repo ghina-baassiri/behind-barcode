@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { Text, View, StyleSheet, Image, FlatList, TouchableOpacity, LogBox } from 'react-native';
+import { useIsFocused } from "@react-navigation/native";
+import { Text, View, StyleSheet, Image, FlatList, TouchableOpacity, LogBox, ActivityIndicator } from 'react-native';
 import { AuthContext } from '../navigation/AuthProvider';
 import { ListStyles } from '../utilities/Styles';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
@@ -10,18 +11,21 @@ export default function ProductMarketsScreen({route, navigation}) {
   
   const { token } = useContext(AuthContext)
   const [markets, setMarkets] = useState([]);
+  const [loading, setLoading] = useState(false)
 
   const product = route.params.product
-  console.log('product markets screen: ', product)
+  const isFocusedHistory = useIsFocused();
+
 
   function fetchProductMarkets(product) {
     axios.get(`http://192.168.43.152:8000/api/productMarkets/${product.barcode}`, {
       headers: {
         'Authorization': `Bearer ${token}`
-      }}).then(response => {        
+      }}).then(response => {   
+        console.log('GOT MARKETS OF ', product.brand)     
         if(response.status === 200) { 
-          setMarkets(response.data.markets)
-          return
+          setLoading(false)
+          setMarkets(response.data.markets)          
         }      
     }).catch(err => {
       console.log('Fetch Product Markets Error: ', err)
@@ -30,8 +34,9 @@ export default function ProductMarketsScreen({route, navigation}) {
   }
 
   useEffect(() => {
-    fetchProductMarkets(product)      
-  }, [])
+    setLoading(true)
+    fetchProductMarkets(product)   
+  }, [isFocusedHistory])
 
 
   return (
@@ -82,6 +87,9 @@ export default function ProductMarketsScreen({route, navigation}) {
               <Text style={{  textAlign:'center', fontSize:14,  fontWeight:'bold', color: '#fff' }} >(LBP)</Text>
             </View>
           </View>
+          { loading && <ActivityIndicator size='large' color='#1eb980' animating={true} style={{opacity:1, position:'absolute', right:0,left:0,top:150,bottom:50 }}/>}
+          { !loading && 
+
           <FlatList
             keyExtractor={(item, index) => index.toString()}
             data={markets}  
@@ -89,7 +97,7 @@ export default function ProductMarketsScreen({route, navigation}) {
                 return (
                   <View style={{...ListStyles.listWidth, flexDirection:'row', textAlign: 'center', alignItems:'center', justifyContent: 'center', borderWidth:1, borderColor:'#d4d4d4', backgroundColor:'#fff', height:50 }}>
                     <TouchableOpacity 
-                      activeOpacity={.9}
+                      activeOpacity={0.7}
                       style={{ flexDirection:'row', alignItems:'center', alignSelf: 'center', width:ListStyles.listWidth.width*0.68,  justifyContent: 'center', height:'100%', paddingHorizontal:4 }}
                       onPress={() => {
                         navigation.navigate('MarketStack', {screen: 'MarketProducts', params: {market: item.item}})}}
@@ -113,6 +121,7 @@ export default function ProductMarketsScreen({route, navigation}) {
                 showsVerticalScrollIndicator={false}              
                 contentContainerStyle={{paddingTop:1,paddingBottom:65}}
           />
+                      }
         </View>
       }
       </View>

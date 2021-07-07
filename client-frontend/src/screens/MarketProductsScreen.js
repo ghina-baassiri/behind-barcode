@@ -1,60 +1,63 @@
-import React, { useState, useEffect, useContext } from 'react'
-import { Text, View, StyleSheet, Image, FlatList, TouchableOpacity, LogBox, ScrollView } from 'react-native';
+import React, { useState, useEffect, useContext } from 'react';
+import { useIsFocused } from "@react-navigation/native";
+import { Text, View, StyleSheet, Image, FlatList, TouchableOpacity, LogBox, ActivityIndicator } from 'react-native';
 import { AuthContext } from '../navigation/AuthProvider';
 import { ListStyles, LoginScreenStyles } from '../utilities/Styles';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import axios from 'axios';
+import { set } from 'react-native-reanimated';
 
 export default function MarketProductsScreen({ route, navigation }) {
   LogBox.ignoreAllLogs();
 
   const { user, token } = useContext(AuthContext)
   const [products, setProducts] = useState([]);
-  const [productName, setProductName] = useState('');
-  const [productCategory, setProductCategory] = useState('');
   const [rated, setRated] = useState(false)
-
+  const [loading, setLoading] = useState(false)
 
   const market = route.params.market
-  console.log('market is:',market)
-  let product = {}
+  const isFocusedHistory = useIsFocused();
+
 
   const fetchRated = (userId, marketId) => {
     axios.get(`http://192.168.43.152:8000/api/rated/${marketId}/user/${userId}`, {
       headers: {
         'Authorization': `Bearer ${token}`
       }})
-    .then(response => {        
-        console.log('rated: ', response.data.rated)
-
-        setRated(response.data.rated)
-        return
+    .then(response => {  
+      console.log('GOT RATED OF ', market.name)           
+      setRated(response.data.rated)
+      return
     })
     .catch(err => {
     console.log('rated Error: ', err)      
     })   
-}
+  }
 
 
   function fetchMarketProducts(market) {
     axios.get(`http://192.168.43.152:8000/api/marketProducts/${market.id}`, {
       headers: {
         'Authorization': `Bearer ${token}`
-      }}).then(response => {        
+      }}).then(response => {  
+        console.log('GOT PRODUCTS OF ', market.name)           
         if(response.status === 200) { 
+          setLoading(false)
           setProducts(response.data.products)
-          return
         }      
     }).catch(err => {
       console.log('fetchMarketProducts Error: ', err)
       
     })   
-  }
+  } 
 
   useEffect(() => {
-    fetchRated(user._id, market.id)
-    fetchMarketProducts(market)      
-  }, [])
+      setLoading(true)
+      fetchRated(user._id, market.id)
+      fetchMarketProducts(market) 
+
+  }, [isFocusedHistory])
+
 
   return (
     <View style={{flex:1, alignItems:'center', }}>
@@ -95,6 +98,9 @@ export default function MarketProductsScreen({ route, navigation }) {
               <Text style={{  textAlign:'center', fontSize:14,  fontWeight:'bold', color: '#fff' }} >(LBP)</Text>
             </View>
         </View>
+        { loading && <ActivityIndicator size='large' color='#1eb980' animating={true} style={{opacity:1, position:'absolute', right:0,left:0,top:250,bottom:0 }}/>}
+        { !loading && 
+
         <FlatList
           keyExtractor={(item, index) => index.toString()}
           data={products}  
@@ -103,8 +109,11 @@ export default function MarketProductsScreen({ route, navigation }) {
               return (
                   <View style={{...ListStyles.listWidth, flexDirection:'row', textAlign: 'center', alignItems:'center', justifyContent: 'center', borderWidth:1, borderColor:'#d4d4d4', backgroundColor:'#fff', height:60 }}>
                     <TouchableOpacity 
+                      activeOpacity={0.7}
                       style={{ flexDirection:'row', alignItems:'center', alignSelf: 'center', width:ListStyles.listWidth.width*0.68,  justifyContent: 'center', height:'100%', paddingHorizontal:2 }}
-                      onPress={() => {navigation.navigate('ProductStack', {screen: 'ProductMarkets', params: {product:item.item}})}}
+                      onPress={() => {
+                        navigation.navigate('ProductStack', {screen: 'ProductMarkets', params: {product:item.item}})
+                      }}
                     > 
                       <View>
                         <Text style={{  height:'auto', textAlign: 'center',fontSize:16 , color:'#000', borderBottomColor:"#1eb980"}} >{item.item.brand} </Text> 
@@ -126,7 +135,7 @@ export default function MarketProductsScreen({ route, navigation }) {
               )}}                      
               showsVerticalScrollIndicator={false}              
               contentContainerStyle={{paddingTop:1,paddingBottom:65}}
-        />
+        />}
         </View>
   );
 }
