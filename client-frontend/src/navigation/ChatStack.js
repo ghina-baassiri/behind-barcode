@@ -1,5 +1,5 @@
 import React from 'react';
-import { TouchableOpacity } from 'react-native';
+import { TouchableOpacity, Text } from 'react-native';
 import { createStackNavigator } from '@react-navigation/stack';
 import ChatScreen from '../screens/ChatScreen';
 import ChatListScreen from '../screens/ChatListScreen';
@@ -33,24 +33,20 @@ export default function ChatStack({navigation}) {
         component={ChatListScreen} 
         options={{ 
           title: 'BB Chats',
+          headerTitleStyle: {
+            fontSize:24,
+            textAlign:'center',
+            left:-31
+          },
           headerLeft: ()=>(
-            <TouchableOpacity onPress={() => navigation.navigate('MarketStack')}>      
+            <TouchableOpacity onPress={() =>  navigation.navigate('ProductStack', {screen: 'Products'})}  >  
               <MaterialIcons
                 name='navigate-before'
                 color='#fff'
-                size={24}   
-                style={{paddingLeft:10}}                    
+                size={32}   
+                style={{paddingLeft:8}}                    
               />
-            </TouchableOpacity>
-          ),
-          headerRight: ()=>(
-            <TouchableOpacity onPress={() => navigation.navigate('ChatList')}>      
-              <Feather
-                  name='search'
-                  size={24}
-                  color='#fff'
-                  style={{right:20}}
-              />
+              {/* <Text style={{fontSize:15, color:'#fff', top:3, }}>Home</Text>  */}
             </TouchableOpacity>
           )
       
@@ -60,15 +56,17 @@ export default function ChatStack({navigation}) {
         name="Chat" 
         component={ChatScreen} 
         options={{
+          title:'',
           headerRight:false,
           headerLeft: ()=>(
-            <TouchableOpacity onPress={() => navigation.navigate('ChatList')}>      
+            <TouchableOpacity onPress={() =>  navigation.navigate('ChatList')}>  
               <MaterialIcons
                 name='navigate-before'
                 color='#fff'
-                size={24}   
-                style={{paddingLeft:10}}                    
+                size={32}   
+                style={{paddingLeft:8}}                    
               />
+              {/* <Text style={{fontSize:15, color:'#fff', top:3, }}>Home</Text>  */}
             </TouchableOpacity>
           )
       
