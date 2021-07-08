@@ -5,13 +5,14 @@ import { AuthContext } from '../navigation/AuthProvider';
 import { ListStyles, LoginScreenStyles } from '../utilities/Styles';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import axios from 'axios';
-import { set } from 'react-native-reanimated';
+import Feather from 'react-native-vector-icons/Feather';
 
 export default function MarketProductsScreen({ route, navigation }) {
   LogBox.ignoreAllLogs();
 
   const { user, token } = useContext(AuthContext)
   const [products, setProducts] = useState([]);
+  const [errorMsg, setErrorMsg] = useState('');
   const [rated, setRated] = useState(false)
   const [loading, setLoading] = useState(false)
 
@@ -46,6 +47,8 @@ export default function MarketProductsScreen({ route, navigation }) {
           setProducts(response.data.products)
         }      
     }).catch(err => {
+      setLoading(false)
+      setErrorMsg(err)
       console.log('fetchMarketProducts Error: ', err)
       
     })   
@@ -57,6 +60,8 @@ export default function MarketProductsScreen({ route, navigation }) {
       fetchMarketProducts(market) 
 
   }, [isFocusedHistory])
+
+
 
 
   return (
@@ -77,16 +82,32 @@ export default function MarketProductsScreen({ route, navigation }) {
             />
           </TouchableOpacity>
           <Text style={{color:'#000', fontSize:13, marginBottom:2, textAlign:'center'}}>{market.phone.slice(0, 2) +' '+market.phone.slice(2, 9) }</Text>
-          
+          <View style={{flexDirection:'row'}}>
+            <Text style={{marginBottom:4}}>Delivery: </Text> 
+            {market.delivery ? 
+            <Feather
+                name='truck'
+                size={17}
+                color='#1eb980'
+                style={{top:1}}
+            /> : 
+            <Feather
+                name='truck'
+                size={17}
+                color='red'
+                style={{top:1}}
+            />}
+            
+        </View>
           <Text style={{marginBottom:4, fontSize:13, textAlign:'center'}}>{market.address.address}</Text>
 
           <View style={{flexDirection:'row', marginVertical:5}}>
               <RatingView numOfStars={market.rating}/>                
           </View>     
           <View>
-            {!rated && <TouchableOpacity style={styles.btn} onPress={()=> {}}>
+            {/* {!rated && <TouchableOpacity style={styles.btn} onPress={()=> {}}>
               <Text style={styles.btnText}>Rate</Text>
-            </TouchableOpacity> }
+            </TouchableOpacity> } */}
           </View>  
       </View>
 
@@ -99,8 +120,8 @@ export default function MarketProductsScreen({ route, navigation }) {
             </View>
         </View>
         { loading && <ActivityIndicator size='large' color='#1eb980' animating={true} style={{opacity:1, position:'absolute', right:0,left:0,top:250,bottom:0 }}/>}
-        { !loading && 
-
+        { (!loading && errorMsg!='') && <Text style={{  color:'#ccc', fontSize:20,top:70}}>No Products</Text>}
+        { (!loading && products!=[]) && 
         <FlatList
           keyExtractor={(item, index) => index.toString()}
           data={products}  
@@ -127,10 +148,8 @@ export default function MarketProductsScreen({ route, navigation }) {
                       />
                     </TouchableOpacity>
                     <View  style={{ justifyContent: 'center', alignItems: 'center', width:'32%', height:'100%', borderLeftWidth:1, borderColor:'#d4d4d4' }} >
-                      <Text style={{ textAlign: 'center', fontSize:16 }} >{item.item.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</Text>
-                      
-                    </View>
-                    
+                      <Text style={{ textAlign: 'center', fontSize:16 }} >{item.item.price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</Text>                      
+                    </View>                    
                   </View>
               )}}                      
               showsVerticalScrollIndicator={false}              

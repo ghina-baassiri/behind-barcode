@@ -11,6 +11,7 @@ export default function ProductMarketsScreen({route, navigation}) {
   
   const { token } = useContext(AuthContext)
   const [markets, setMarkets] = useState([]);
+  const [errorMsg, setErrorMsg] = useState('');
   const [loading, setLoading] = useState(false)
 
   const product = route.params.product
@@ -28,6 +29,8 @@ export default function ProductMarketsScreen({route, navigation}) {
           setMarkets(response.data.markets)          
         }      
     }).catch(err => {
+      setLoading(false)
+      setErrorMsg(err)
       console.log('Fetch Product Markets Error: ', err)
       
     })   
@@ -52,11 +55,11 @@ export default function ProductMarketsScreen({route, navigation}) {
             <Image
               source={require('../../assets/chat.png')}
               resizeMode='contain'
-              style={{width:35, height:35, tintColor:'#fff', right:20}}   
+              style={{width:30, height:30, tintColor:'#fff', right:20}}   
                
             />
       </TouchableOpacity>
-    <View style={{flex:1, alignItems:'center',}}>
+    <View style={{flex:1, alignItems:'center'}}>
           
       {/* Product */}
       <View style={{...ListStyles.mainItemWrapper, paddingHorizontal:15, marginTop:20}}>                           
@@ -88,7 +91,8 @@ export default function ProductMarketsScreen({route, navigation}) {
             </View>
           </View>
           { loading && <ActivityIndicator size='large' color='#1eb980' animating={true} style={{opacity:1, position:'absolute', right:0,left:0,top:150,bottom:50 }}/>}
-          { !loading && 
+          { (!loading && errorMsg!='') && <Text style={{  color:'#ccc', fontSize:20,top:70}}>No Products</Text>}
+          { (!loading && markets!=[]) && 
 
           <FlatList
             keyExtractor={(item, index) => index.toString()}
