@@ -333,6 +333,7 @@ export default function SignupScreen({ navigation }) {
 
         <View style={LoginScreenStyles.button}>
           <TouchableOpacity
+          activeOpacity={1}
             onPress={onSignUpPress}
             style={{...LoginScreenStyles.signIn, backgroundColor:'#17a672', marginTop: 15, marginBottom:15}}
           >
@@ -349,11 +350,7 @@ export default function SignupScreen({ navigation }) {
           />
           <View style={{...CommonScreenStyles.navButton, justifyContent: 'center', alignItems: 'center'}}>
             <Text style={{...LoginScreenStyles.text_footer, fontSize: 15}}>Already a user? </Text>
-            <TouchableOpacity
-              onPress={() => {
-                onSignUpPress()                
-              }}
-            >
+            <TouchableOpacity onPress={() => navigation.navigate('Login')} >
               <Text style={{...LoginScreenStyles.text_footer,  textDecorationLine:'underline', fontSize: 15}}>Sign In</Text>
             </TouchableOpacity>
           </View>
