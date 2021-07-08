@@ -33,8 +33,8 @@ export default function BarcodeScannerModal({product, visibility, setVisibility,
             </View>
           
             <TouchableOpacity
-                onPress={() => {
-               
+              activeOpacity={1}
+                onPress={() => {               
                   navigation.navigate('ProductStack', {screen: 'ProductMarkets', params: {product:product}})}}
                 style={{...styles.btn, marginVertical:20, alignSelf:'center'}}
             >

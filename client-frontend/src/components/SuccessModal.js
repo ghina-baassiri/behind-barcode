@@ -17,7 +17,7 @@ export default function SuccessModal({ navigation }) {
                     </View>
                     <Text style={{marginVertical:30, fontSize:20, textAlign:'center'}}>Congratulations you are successfully registered!</Text>
                 
-                    <TouchableOpacity style={styles.footer} onPress={() => navigation.navigate('Login')}>
+                    <TouchableOpacity activeOpacity={1} style={styles.footer} onPress={() => navigation.navigate('Login')}>
                         <MaterialIcons
                             name='navigate-next'
                             color='#000'

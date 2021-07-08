@@ -1,23 +1,25 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { TouchableOpacity, Text, Image, View, Modal, StyleSheet} from 'react-native';
+import { LoginScreenStyles } from '../utilities/Styles';
 
 
-export default function SuccessModal(visibility, setVisibility) {
+export default function ProductNotFoundModal({visibility, setVisibility, setScanned}) {
 
     return (
+        // <Text>hello</Text>
         <Modal animationType='slide' visible={visibility} transparent={true} >
             <View style={styles.modalBg}>
                 <View style={styles.modalContainer}>
                     <View style={{alignItems:'center'}}>
-                        
+                        <Image source={require('../../assets/cancel.png')} style={{ marginVertical:10, height:120, width:120}}/>
                     </View>
-                    <View style={{alignItems:'center'}}>
-                        <Image source={require('../../assets/success.jpg')} style={{tintColor:'#1eb980', marginVertical:10, height:150, width:150}}/>
-                    </View>
-                    <Text style={{marginVertical:30, fontSize:20, textAlign:'center'}}>Product not found! Scan another barcode.</Text>
+                    <Text style={{marginVertical:30, fontSize:20, textAlign:'center'}}>Product scanned is not found..</Text>
                 
-                    <TouchableOpacity style={styles.footer} onPress={() => setVisibility(false)}>
-                        <Text>OK</Text>
+                    <TouchableOpacity activeOpacity={1} style={{...styles.btn, borderColor:'#1eb980', borderWidth:1, marginTop: 15}} onPress={() => {
+                        setScanned(false) 
+                        setVisibility(false)
+                    }}>
+                        <Text style={styles.btnText}>Scan Another Product</Text>
                     </TouchableOpacity>
                 </View>
             </View>             
@@ -38,12 +40,25 @@ const styles = StyleSheet.create({
         paddingHorizontal:20,
         paddingVertical:30,
         borderRadius:20,
-        elevation:20
+        elevation:20,
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     footer: {
         width: '100%',
         height:40,
-        alignItems:'flex-end',
         justifyContent:'center'
-    }
+    },
+    btnText: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: '#1eb980'
+    },
+    btn: {
+        width: '80%',
+        height: 40,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: 10
+    },
 })
