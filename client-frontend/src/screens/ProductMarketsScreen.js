@@ -121,13 +121,7 @@ export default function ProductMarketsScreen({route, navigation}) {
       </View>
 }
       {/* Price per market */}
-      
-      {!markets ? 
-      
-        <View style={{alignItems:'center'}}>
-          <Image source={require('../../assets/success.jpg')} style={{tintColor:'#1eb980', marginVertical:10, height:150, width:150}}/>
-        </View>
-        :
+    
         <View style={{ alignItems:'center', justifyContent: 'center' }}>
           <Feather
             name='search'
@@ -191,7 +185,7 @@ export default function ProductMarketsScreen({route, navigation}) {
           />
                       }
         </View>
-      }
+      
       </View>
       </>
   )

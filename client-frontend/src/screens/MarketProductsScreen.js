@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useIsFocused } from "@react-navigation/native";
-import { Text, View, StyleSheet, Image, FlatList, TouchableOpacity, LogBox, ActivityIndicator } from 'react-native';
+import { Text, View, StyleSheet, Image, FlatList, TouchableOpacity, LogBox, ActivityIndicator, TextInput, Keyboard } from 'react-native';
 import { AuthContext } from '../navigation/AuthProvider';
 import { ListStyles, LoginScreenStyles } from '../utilities/Styles';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
@@ -15,7 +15,11 @@ export default function MarketProductsScreen({ route, navigation }) {
   const [errorMsg, setErrorMsg] = useState('');
   const [rated, setRated] = useState(false)
   const [loading, setLoading] = useState(false)
-
+  const [borderWidth, setBorderWidth] = useState(1);
+  const [filteredProducts, setFilteredProducts] = useState([]);
+  const [search, setSearch] = useState('');
+  const [showMarketCard, setShowMarketCard] = useState(true);
+  const [searchTextInputMarginTop, setSearchTextInputMarginTop] = useState(0)
   const market = route.params.market
   const isFocusedHistory = useIsFocused();
 
@@ -45,6 +49,7 @@ export default function MarketProductsScreen({ route, navigation }) {
         if(response.status === 200) { 
           setLoading(false)
           setProducts(response.data.products)
+          setFilteredProducts(response.data.products)
         }      
     }).catch(err => {
       setLoading(false)
@@ -54,11 +59,48 @@ export default function MarketProductsScreen({ route, navigation }) {
     })   
   } 
 
+  const searchFilter = (text) => {
+    if(text) {
+      const newData = products.filter((item) => {
+        const itemData = item.brand ? item.brand.toUpperCase() : ''.toUpperCase()
+        const textData = text.toUpperCase()
+        return itemData.indexOf(textData) > -1
+      })
+    setFilteredProducts(newData)
+    setSearch(text)
+    }
+    else {
+      setFilteredProducts(products)
+      setSearch(text)
+    }
+  }
+
+  const onFocus = () => {
+    setBorderWidth(2)
+  }
+
+  const onBlur = () => {
+    setBorderWidth(1)
+  }
+
+  const keyboardDidShow = () => {
+    setShowMarketCard(false)
+  }
+
+  const keyboardDidHide = () => {
+    setShowMarketCard(true)
+  }
+
+  useEffect(() => {
+    setSearchTextInputMarginTop(10)
+  }, [showMarketCard])
+
   useEffect(() => {
       setLoading(true)
       fetchRated(user._id, market.id)
       fetchMarketProducts(market) 
-
+      Keyboard.addListener('keyboardDidShow', keyboardDidShow)
+      Keyboard.addListener('keyboardDidHide', keyboardDidHide) 
   }, [isFocusedHistory])
 
 
@@ -67,6 +109,7 @@ export default function MarketProductsScreen({ route, navigation }) {
   return (
     <View style={{flex:1, alignItems:'center', }}>
       {/* Market */}
+      {showMarketCard &&
       <View style={{...ListStyles.mainItemWrapper, paddingHorizontal:15, marginTop:20}}>                           
           <Image
             source={{uri:market.logo}} 
@@ -105,13 +148,28 @@ export default function MarketProductsScreen({ route, navigation }) {
               <RatingView numOfStars={market.rating}/>                
           </View>     
           <View>
-            {/* {!rated && <TouchableOpacity style={styles.btn} onPress={()=> {}}>
-              <Text style={styles.btnText}>Rate</Text>
-            </TouchableOpacity> } */}
           </View>  
       </View>
+}
 
       {/* Products prices */}
+      <View style={{ alignItems:'center', justifyContent: 'center' }}>
+          <Feather
+            name='search'
+            size={20}
+            color='#ccc'
+            style={{position:'absolute',right:18, top:17, zIndex:1}}
+            onPress={()=> Keyboard.dismiss()}
+        />
+        <TextInput
+          style={{...styles.textInput,...ListStyles.listWidth, marginBottom:5, borderWidth:borderWidth, marginTop: searchTextInputMarginTop }}
+          value={search}
+          placeholder='Search Product'
+          underlineColorAndroid='transparent'
+          onChangeText={(text)=>searchFilter(text)}
+          onFocus={ () => onFocus() }
+          onBlur={ () => onBlur() }
+        />
         <View style={{...ListStyles.listWidth, flexDirection:'row',  justifyContent: 'center', borderWidth:1, borderColor:'#d4d4d4', borderTopLeftRadius:10, borderTopRightRadius: 10, backgroundColor:'#1eb980', height:35,  elevation:3 }}>
           <Text style={{textAlign: 'center', alignSelf: 'center', fontSize:18 , fontWeight:'bold', borderRightWidth:1, width:'68%',  borderColor:'#d4d4d4', color:'#fff' }} >Product</Text>
           <View style={{width:'32%', alignItems: 'center', justifyContent:'center', flexDirection:'row'}}>
@@ -121,10 +179,10 @@ export default function MarketProductsScreen({ route, navigation }) {
         </View>
         { loading && <ActivityIndicator size='large' color='#1eb980' animating={true} style={{opacity:1, position:'absolute', right:0,left:0,top:250,bottom:0 }}/>}
         { (!loading && errorMsg!='') && <Text style={{  color:'#ccc', fontSize:20,top:70}}>No Products</Text>}
-        { (!loading && products!=[]) && 
+        { (!loading && filteredProducts!=[]) && 
         <FlatList
           keyExtractor={(item, index) => index.toString()}
-          data={products}  
+          data={filteredProducts}  
             renderItem={item => {
 
               return (
@@ -156,37 +214,11 @@ export default function MarketProductsScreen({ route, navigation }) {
               contentContainerStyle={{paddingTop:1,paddingBottom:65}}
         />}
         </View>
+        </View>
   );
 }
 
-const styles = StyleSheet.create({
-  image: {
-    width:120, 
-    height:120,
-    marginBottom:8,
-    borderRadius:10
-  },
-  icon: {
-    width:30, 
-    height:30,
-    marginBottom:4,
-    borderRadius:10
-  },
-  btn: {
-    width:  60,
-    height: 30,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 10,
-    marginTop:15,
-    backgroundColor:'#1eb980'
-},
-btnText: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    color:'#fff'
-}, 
-})
+
 
 function RatingView(numOfStars) {
   var stars=[]
@@ -223,3 +255,39 @@ function RatingView(numOfStars) {
     </View>
   )  
 }
+
+const styles = StyleSheet.create({
+  image: {
+    width:120, 
+    height:120,
+    marginBottom:8,
+    borderRadius:10
+  },
+  icon: {
+    width:30, 
+    height:30,
+    marginBottom:4,
+    borderRadius:10
+  },
+  btn: {
+    width:  60,
+    height: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 10,
+    marginTop:15,
+    backgroundColor:'#1eb980'
+},
+btnText: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color:'#fff'
+}, 
+textInput: {
+  height: 35,    
+  paddingHorizontal: 20,
+  backgroundColor: '#fff',
+  borderRadius:20,
+  borderColor: '#1eb980', 
+}
+})
