@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useIsFocused } from "@react-navigation/native";
-import { Text, View, StyleSheet, Image, FlatList, TouchableOpacity, LogBox, ActivityIndicator } from 'react-native';
+import { Text, View, StyleSheet, Image, FlatList, TouchableOpacity, LogBox, ActivityIndicator,  KeyboardAvoidingView , Keyboard, TextInput } from 'react-native';
 import { AuthContext } from '../navigation/AuthProvider';
 import { ListStyles } from '../utilities/Styles';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import Feather from 'react-native-vector-icons/Feather';
 import axios from 'axios'
 
 export default function ProductMarketsScreen({route, navigation}) {
@@ -13,7 +14,11 @@ export default function ProductMarketsScreen({route, navigation}) {
   const [markets, setMarkets] = useState([]);
   const [errorMsg, setErrorMsg] = useState('');
   const [loading, setLoading] = useState(false)
-
+  const [borderWidth, setBorderWidth] = useState(1);
+  const [filteredMarkets, setFilteredMarkets] = useState([]);
+  const [search, setSearch] = useState('');
+  const [showProductCard, setShowProductCard] = useState(true);
+  const [searchTextInputMarginTop, setSearchTextInputMarginTop] = useState(0)
   const product = route.params.product
   const isFocusedHistory = useIsFocused();
 
@@ -26,7 +31,8 @@ export default function ProductMarketsScreen({route, navigation}) {
         console.log('GOT MARKETS OF ', product.brand)     
         if(response.status === 200) { 
           setLoading(false)
-          setMarkets(response.data.markets)          
+          setMarkets(response.data.markets)    
+          setFilteredMarkets(response.data.markets)      
         }      
     }).catch(err => {
       setLoading(false)
@@ -36,9 +42,47 @@ export default function ProductMarketsScreen({route, navigation}) {
     })   
   }
 
+  const searchFilter = (text) => {
+    if(text) {
+      const newData = markets.filter((item) => {
+        const itemData = item.name ? item.name.toUpperCase() : ''.toUpperCase()
+        const textData = text.toUpperCase()
+        return itemData.indexOf(textData) > -1
+      })
+      setFilteredMarkets(newData)
+      setSearch(text)
+    }
+    else {
+      setFilteredMarkets(markets)
+      setSearch(text)
+    }
+  }
+
+  const onFocus = () => {
+    setBorderWidth(2)
+  }
+
+  const onBlur = () => {
+    setBorderWidth(1)
+  }
+
+  const keyboardDidShow = () => {
+    setShowProductCard(false)
+  }
+
+  const keyboardDidHide = () => {
+    setShowProductCard(true)
+  }
+
+  useEffect(() => {
+    setSearchTextInputMarginTop(10)
+  }, [showProductCard])
+
   useEffect(() => {
     setLoading(true)
-    fetchProductMarkets(product)   
+    fetchProductMarkets(product)  
+    Keyboard.addListener('keyboardDidShow', keyboardDidShow)
+    Keyboard.addListener('keyboardDidHide', keyboardDidHide) 
   }, [isFocusedHistory])
 
 
@@ -62,6 +106,8 @@ export default function ProductMarketsScreen({route, navigation}) {
     <View style={{flex:1, alignItems:'center'}}>
           
       {/* Product */}
+      {showProductCard && 
+
       <View style={{...ListStyles.mainItemWrapper, paddingHorizontal:15, marginTop:20}}>                           
           <Image
             source={{uri:product.image}} 
@@ -73,7 +119,7 @@ export default function ProductMarketsScreen({route, navigation}) {
           <Text style={{fontSize:13, textAlign:'center'}}>{product.size} {product.unit}</Text>    
           
       </View>
-
+}
       {/* Price per market */}
       
       {!markets ? 
@@ -83,6 +129,22 @@ export default function ProductMarketsScreen({route, navigation}) {
         </View>
         :
         <View style={{ alignItems:'center', justifyContent: 'center' }}>
+          <Feather
+            name='search'
+            size={20}
+            color='#ccc'
+            style={{position:'absolute',right:18, top:17, zIndex:1}}
+            onPress={()=> Keyboard.dismiss()}
+        />
+        <TextInput
+          style={{...styles.textInput,...ListStyles.listWidth, marginBottom:5, borderWidth:borderWidth, marginTop: searchTextInputMarginTop }}
+          value={search}
+          placeholder='Search Market'
+          underlineColorAndroid='transparent'
+          onChangeText={(text)=>searchFilter(text)}
+          onFocus={ () => onFocus() }
+          onBlur={ () => onBlur() }
+        />
           <View style={{...ListStyles.listWidth, flexDirection:'row',  justifyContent: 'center', borderWidth:1, borderColor:'#d4d4d4', borderTopLeftRadius:10, borderTopRightRadius: 10, backgroundColor:'#1eb980', height:35,  elevation:3 }}>
             <Text style={{textAlign: 'center', alignSelf: 'center', fontSize:18 , fontWeight:'bold', borderRightWidth:1, width:'68%',  borderColor:'#d4d4d4', color:'#fff' }} >Market</Text>
             <View style={{width:'32%', alignItems: 'center', justifyContent:'center', flexDirection:'row'}}>
@@ -90,13 +152,15 @@ export default function ProductMarketsScreen({route, navigation}) {
               <Text style={{  textAlign:'center', fontSize:14,  fontWeight:'bold', color: '#fff' }} >(LBP)</Text>
             </View>
           </View>
+
+
           { loading && <ActivityIndicator size='large' color='#1eb980' animating={true} style={{opacity:1, position:'absolute', right:0,left:0,top:150,bottom:50 }}/>}
           { (!loading && errorMsg!='') && <Text style={{  color:'#ccc', fontSize:20,top:70}}>No Products</Text>}
           { (!loading && markets!=[]) && 
 
           <FlatList
             keyExtractor={(item, index) => index.toString()}
-            data={markets}  
+            data={filteredMarkets}  
               renderItem={item => {
                 return (
                   <View style={{...ListStyles.listWidth, flexDirection:'row', textAlign: 'center', alignItems:'center', justifyContent: 'center', borderWidth:1, borderColor:'#d4d4d4', backgroundColor:'#fff', height:50 }}>
@@ -156,5 +220,12 @@ const styles = StyleSheet.create({
     height:25,
     marginLeft:10,
     tintColor: '#1eb980'
-  } 
+  },
+  textInput: {
+    height: 35,    
+    paddingHorizontal: 20,
+    backgroundColor: '#fff',
+    borderRadius:20,
+    borderColor: '#1eb980', 
+  }
 })
