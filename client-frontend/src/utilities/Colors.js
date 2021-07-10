@@ -1,0 +1,7 @@
+export const BBThemeColor = '#1eb980'
+export const BBLightGreyColor = '#ccc'
+export const BBGreyColor = '#d4d4d4'
+export const BBMediumDarkGreyColor = '#666'
+export const BBDarkGreyColor = '#333'
+export const BBYellowColor = '#ffff00'
+export const BBRedColor = '#cf4332'

@@ -1,11 +1,6 @@
-import React from 'react';
-import Providers from './src/navigation';
-import firebaseConfig from './src/utilities/config';
+import React from 'react'
+import Providers from './src/navigation'
 
 export default function App() {
-  return (
-    <Providers/>
-  );
+  return <Providers />
 }
- 
-

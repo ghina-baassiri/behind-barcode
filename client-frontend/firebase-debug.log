@@ -22,3 +22,39 @@ You're about to initialize a Firebase project in this directory:
 
 [debug] [2021-06-12T14:58:10.129Z] <<< [apiv2][status] GET https://firebase-public.firebaseio.com/cli.json 200
 [debug] [2021-06-12T14:58:10.130Z] <<< [apiv2][body] GET https://firebase-public.firebaseio.com/cli.json {"cloudBuildErrorAfter":1594252800000,"cloudBuildWarnAfter":1590019200000,"defaultNode10After":1594252800000,"minVersion":"3.0.5","node8DeploysDisabledAfter":1613390400000,"node8RuntimeDisabledAfter":1615809600000,"node8WarnAfter":1600128000000}
+[info] 
+=== Project Setup
+[info] 
+[info] First, let's associate this project directory with a Firebase project.
+[info] You can create multiple project aliases by running firebase use --add, 
+[info] but for now we'll just set up a default project.
+[info] 
+[info] i  If you want to create a project in a Google Cloud organization or folder, please use "firebase projects:create" instead, and return to this command when you've created the project. 
+[debug] [2021-06-12T15:03:56.877Z] ----------------------------------------------------------------------
+[debug] [2021-06-12T15:03:56.880Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\USER\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js init
+[debug] [2021-06-12T15:03:56.880Z] CLI Version:   9.10.2
+[debug] [2021-06-12T15:03:56.880Z] Platform:      win32
+[debug] [2021-06-12T15:03:56.880Z] Node Version:  v14.17.0
+[debug] [2021-06-12T15:03:56.881Z] Time:          Sat Jun 12 2021 18:03:56 GMT+0300 (Eastern European Summer Time)
+[debug] [2021-06-12T15:03:56.881Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2021-06-12T15:03:56.890Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2021-06-12T15:03:56.890Z] > authorizing via signed-in user (baassiri.ghina@gmail.com)
+[info] 
+     ######## #### ########  ######## ########     ###     ######  ########
+     ##        ##  ##     ## ##       ##     ##  ##   ##  ##       ##
+     ######    ##  ########  ######   ########  #########  ######  ######
+     ##        ##  ##    ##  ##       ##     ## ##     ##       ## ##
+     ##       #### ##     ## ######## ########  ##     ##  ######  ########
+
+You're about to initialize a Firebase project in this directory:
+
+  C:\Users\USER\Documents\Full Stack Web Developer-SEF\SEF-2021\Final Project\FPRepo\Git\client-frontend
+
+[info] 
+=== Project Setup
+[info] 
+[info] First, let's associate this project directory with a Firebase project.
+[info] You can create multiple project aliases by running firebase use --add, 
+[info] but for now we'll just set up a default project.
+[info] 
