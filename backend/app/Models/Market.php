@@ -22,6 +22,12 @@ class Market extends Model
         'phone'
     ];
 
+    /**
+    * Get address details using address_id of Market.
+    *
+    * @return Address
+    *
+    */
     public function address() {
         return $this->hasOne(Address::class, 'id', 'address_id');
     }

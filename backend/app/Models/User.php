@@ -35,7 +35,13 @@ class User extends Authenticatable
         'remember_token',
     ];
 
-
+    /**
+    * Create user instance.
+    *
+    * @param Request
+    * @param int
+    *
+    */
     public static function createUser(array $userData, int $permission_level) {
         return User::create([
             'name' => $userData['name'],

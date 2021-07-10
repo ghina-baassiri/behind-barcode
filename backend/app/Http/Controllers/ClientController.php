@@ -38,6 +38,7 @@ class ClientController extends Controller
 
         $request['password']=Hash::make($request['password']);
         $request['remember_token'] = Str::random(10);
+        $request['avatar'] = 'https://firebasestorage.googleapis.com/v0/b/behind-barcode.appspot.com/o/images%2Fusers%2Favatar.png?alt=media&token=26d72ca6-5672-4602-baeb-e8565e68713f';
         $user = User::createUser($request->toArray() , config('permission_levels.client'));
         Client::createClient($request , $user->id);
         $token = $user->createToken('Laravel Password Grant User')->accessToken;
@@ -126,7 +127,7 @@ class ClientController extends Controller
         return response()->json([ 
             'rated' => $rated,
             'marketId' => $rating->market_id,
-            'clientId' => $rating->client_id
+            'userId' => $userId
          ], 200);
     }
 }

@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Validator;
 use App\Models\User;
 use App\Models\Admin;
 use App\Models\Address;
+use App\Models\Price;
 use Illuminate\Support\Str;
 
 class AdminController extends Controller
@@ -53,5 +54,22 @@ class AdminController extends Controller
         $admin = Admin::with('user')->where('user_id',auth('users-api')->user()->id )->first();
         // error_log($admin['user']->address_id);
         return response()->json($admin, 200);
+    }
+
+    /**
+    * Admin change price.
+    *
+    * @param  
+    * @return JSON Response
+    *
+    */
+    public function changePrice(Request $request, $price_id) {
+
+        // error_log($admin['user']->address_id);
+        return $request;
+        $price = Price::find($price_id);        
+        $price->update($request->all());
+        $price->save();
+        return response()->json($price, 200);
     }
 }

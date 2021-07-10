@@ -30,7 +30,7 @@ class RatingFactory extends Factory
         return [
             'stars' => $stars,
             'market_id' => $market_id,
-            'client_id' => $user_id
+            'client_id' => $client_id
         ];
     }
 }

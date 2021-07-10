@@ -20,10 +20,22 @@ class Price extends Model
         'price'
     ];
 
+    /**
+    * Get market details using market_id of Price.
+    *
+    * @return Market
+    *
+    */
     public function market() {
         return $this->hasOne(Market::class, 'id', 'market_id');
     }
 
+    /**
+    * Get product details using product_barcode of Price.
+    *
+    * @return Product
+    *
+    */
     public function product() {
         return $this->hasOne(Product::class, 'barcode', 'product_barcode');
     }

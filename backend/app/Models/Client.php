@@ -34,10 +34,24 @@ class Client extends Authenticatable
         'fcm_token',
     ];
 
+
+     /**
+    * Get user details using user_id of Admin.
+    *
+    * @param  
+    * @return User
+    *
+    */
     public function user() {
         return $this->hasOne(User::class, 'id', 'user_id');
     }
 
+    /**
+    * Create client instance.
+    *
+    * @param Request
+    * @param int
+    */
     public static function createClient(Request $request, int $user_id) {
         $client = new Client();
         $client->avatar = $request['avatar'];

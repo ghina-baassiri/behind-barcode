@@ -20,10 +20,6 @@ use App\Models\User;
 |
 */
 
-// Route::middleware('auth:api')->get('/user', function (Request $request) {
-//     return $request->user();
-// });
-
 
 Route::post('login', [LoginController::class, 'login']);
 Route::post('clientRegister', [ClientController::class, 'register']);
@@ -33,12 +29,13 @@ Route::post('adminRegister', [AdminController::class, 'register']);
 Route::group(['middleware' => 'auth.client'], function () {
     Route::get('clientDetails', [ClientController::class, 'clientDetails']);  
     Route::post('addRating', [ClientController::class, 'addRating']);
-    Route::get('marketRating', [ClientController::class, 'marketRating']);
+    Route::get('marketRating/{marketId}', [ClientController::class, 'marketRating']);
     Route::get('rated/{marketId}/user/{userId}', [ClientController::class, 'rated']);
 });
 
 Route::group(['middleware' => 'auth.admin'], function () {
     Route::get('adminDetails', [AdminController::class, 'adminDetails']);  
+    Route::put('changePrice/{price_id}', [AdminController::class, 'changePrice']);
 });
 
 Route::group(['middleware' => 'auth.user'], function () {
@@ -48,7 +45,6 @@ Route::group(['middleware' => 'auth.user'], function () {
     Route::get('marketProducts/{id}', [CommonAPIsController::class, 'marketProducts']); 
     Route::get('productMarkets/{barcode}', [CommonAPIsController::class, 'productMarkets']);   
     Route::get('product/{barcode}', [CommonAPIsController::class, 'product']);   
-
 });
 
 

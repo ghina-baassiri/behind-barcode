@@ -10,6 +10,14 @@ use App\Models\User;
 use App\Models\Admin;
 use App\Models\Client;
 
+
+/**
+* User Register.
+*
+* @param  Request  $request
+* @return JSON Response
+*
+*/
 class LoginController extends Controller
 {
     public function login(Request $request)
@@ -48,6 +56,13 @@ class LoginController extends Controller
         }
     }
 
+    /**
+    * User Logout.
+    *
+    * @param  Request  $request
+    * @return JSON Response
+    *
+    */
     public function logout(Request $request){  
         Auth::logout();
         //$request->user()->token()->revoke();

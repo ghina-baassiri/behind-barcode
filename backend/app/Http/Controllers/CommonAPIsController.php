@@ -144,9 +144,6 @@ class CommonAPIsController extends Controller
 
             $counter++;
         }   
-        // $productMarketsDetails['product'] = $product;
-        // $productMarketsDetails['markets'] = $marketsDetails;
-
         return response()->json([ 'markets' => $productMarkets ], 200);
     }
 
@@ -166,5 +163,4 @@ class CommonAPIsController extends Controller
 
         return response()->json([ 'product' => $product ], 200);
     }
-    
 }
