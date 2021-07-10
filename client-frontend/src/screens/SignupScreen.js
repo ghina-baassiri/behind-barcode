@@ -5,6 +5,7 @@ import {
   TextInput,
   TouchableOpacity,
   ScrollView,
+  StyleSheet,
 } from 'react-native'
 import Icon from 'react-native-vector-icons/Ionicons'
 import Feather from 'react-native-vector-icons/Feather'
@@ -192,7 +193,7 @@ export default function SignupScreen({ navigation }) {
   }, [name])
 
   return (
-    <View style={{ backgroundColor: BBThemeColor }}>
+    <View style={styles.container}>
       {success ? <SuccessModal navigation={navigation} /> : null}
       <View style={styles.header}>
         <Text style={styles.text_header}>Let's join BB</Text>
@@ -356,15 +357,14 @@ export default function SignupScreen({ navigation }) {
               <Text style={{ ...styles.btnText, color: '#fff' }}>Sign Up</Text>
             </TouchableOpacity>
           </View>
+
           <View
             style={{
-              borderBottomColor: BBLightGreyColor,
-              borderBottomWidth: 1,
-              width: 150,
-              alignSelf: 'center',
+              ...styles.navBtn,
+              justifyContent: 'center',
+              alignItems: 'center',
             }}
-          />
-          <View style={styles.container}>
+          >
             <Text style={styles.text_footer}>Already a user? </Text>
             <TouchableOpacity onPress={() => navigation.navigate('Login')}>
               <Text
@@ -386,10 +386,7 @@ export default function SignupScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: windowWidth,
-    height: windowHeight,
+    backgroundColor: BBThemeColor,
   },
   header: {
     flex: 1,
@@ -412,7 +409,7 @@ const styles = StyleSheet.create({
   },
   text_footer: {
     color: '#05375a',
-    fontSize: 18,
+    fontSize: 16,
   },
   action: {
     flexDirection: 'row',
@@ -447,5 +444,10 @@ const styles = StyleSheet.create({
   btnText: {
     fontSize: 18,
     fontWeight: 'bold',
+  },
+  navBtn: {
+    marginTop: 10,
+    marginBottom: 15,
+    flexDirection: 'row',
   },
 })

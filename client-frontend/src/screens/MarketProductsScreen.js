@@ -19,6 +19,7 @@ import { AuthContext } from '../navigation/AuthProvider'
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 import axios from 'axios'
 import Feather from 'react-native-vector-icons/Feather'
+import { windowWidth } from '../utilities/Dimensions'
 
 export default function MarketProductsScreen({ route, navigation }) {
   LogBox.ignoreAllLogs()

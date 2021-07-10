@@ -1,11 +1,19 @@
 import React, { useState, useContext, useEffect } from 'react'
-import { Text, View, TextInput, TouchableOpacity, Animated } from 'react-native'
+import {
+  Text,
+  View,
+  TextInput,
+  TouchableOpacity,
+  Animated,
+  StyleSheet,
+} from 'react-native'
 import { AuthContext } from '../navigation/AuthProvider'
 import { ActivityIndicator } from 'react-native-paper'
 import { BBThemeColor } from '../utilities/Colors'
 import { BBLightGreyColor } from '../utilities/Colors'
 import { BBRedColor } from '../utilities/Colors'
 import Icon from 'react-native-vector-icons/Ionicons'
+import { windowHeight, windowWidth } from '../utilities/Dimensions'
 import Feather from 'react-native-vector-icons/Feather'
 import axios from 'axios'
 
@@ -193,14 +201,6 @@ export default function LoginScreen({ navigation }) {
           </View>
           <View
             style={{
-              borderBottomColor: BBLightGreyColor,
-              borderBottomWidth: 1,
-              width: 150,
-              alignSelf: 'center',
-            }}
-          />
-          <View
-            style={{
               ...styles.navBtn,
               justifyContent: 'center',
               alignItems: 'center',
@@ -230,10 +230,7 @@ export default function LoginScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: windowWidth,
-    height: windowHeight,
+    backgroundColor: BBThemeColor,
   },
   header: {
     flex: 1,
@@ -256,7 +253,7 @@ const styles = StyleSheet.create({
   },
   text_footer: {
     color: '#05375a',
-    fontSize: 18,
+    fontSize: 16,
   },
   action: {
     flexDirection: 'row',
@@ -293,7 +290,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   navBtn: {
-    marginTop: 10,
+    marginTop: 15,
     flexDirection: 'row',
   },
   navBtnText: {
@@ -303,5 +300,9 @@ const styles = StyleSheet.create({
   navText: {
     fontSize: 20,
     color: '#000',
+  },
+  textSign: {
+    fontSize: 18,
+    fontWeight: 'bold',
   },
 })

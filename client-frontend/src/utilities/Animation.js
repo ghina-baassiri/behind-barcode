@@ -1,5 +1,4 @@
-import { Animated } from 'react-native'
-import { SplashScreenStyles } from '../utilities/Styles'
+import { Animated, StyleSheet } from 'react-native'
 import { windowHeight } from '../utilities/Dimensions'
 
 const opacity = new Animated.Value(0)
@@ -21,8 +20,12 @@ const size = opacity.interpolate({
   outputRange: [0, windowHeight * 0.25],
 })
 
+const styles = StyleSheet.create({
+  box: {},
+})
+
 export const animatedStyles = [
-  SplashScreenStyles.box,
+  styles.box,
   {
     opacity,
     width: size,

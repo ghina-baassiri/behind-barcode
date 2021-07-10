@@ -7,9 +7,14 @@ import {
   Animated,
   StyleSheet,
 } from 'react-native'
+import { BBThemeColor } from '../utilities/Colors'
 import { LinearGradient } from 'expo-linear-gradient'
 import { animate, animatedStyles } from '../utilities/Animation'
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
+import { windowHeight, windowWidth } from '../utilities/Dimensions'
+
+const height_logo = windowHeight * 0.45
+const width_logo = windowWidth * 0.45
 
 export default function SplashScreen({ navigation }) {
   useEffect(() => {

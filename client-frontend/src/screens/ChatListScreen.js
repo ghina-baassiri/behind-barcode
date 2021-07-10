@@ -6,8 +6,9 @@ import {
   TouchableOpacity,
   FlatList,
   StyleSheet,
-  StatusBar,
   Image,
+  Platform,
+  StatusBar,
 } from 'react-native'
 import { BBThemeColor } from '../utilities/Colors'
 import { BBLightGreyColor } from '../utilities/Colors'
@@ -15,10 +16,10 @@ import { BBMediumDarkGreyColor } from '../utilities/Colors'
 import { BBDarkGreyColor } from '../utilities/Colors'
 import Feather from 'react-native-vector-icons/Feather'
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
+import { windowWidth, windowHeight } from '../utilities/Dimensions'
 import { firebaseConfig } from '../utilities/config'
 import firebase from 'firebase'
 require('firebase/firestore')
-import { windowWidth } from '../utilities/Dimensions'
 
 export default function ChatList({ navigation }) {
   if (!firebase.apps.length) {
@@ -129,6 +130,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     width: windowWidth,
     height: windowHeight,
+    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
   },
   header: {
     alignItems: 'center',

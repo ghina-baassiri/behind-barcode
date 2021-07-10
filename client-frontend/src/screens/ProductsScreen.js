@@ -6,10 +6,12 @@ import {
   FlatList,
   TextInput,
   StyleSheet,
+  Platform,
+  StatusBar,
 } from 'react-native'
 import { BBThemeColor } from '../utilities/Colors'
 import { AuthContext } from '../navigation/AuthProvider'
-import { windowWidth } from '../utilities/Dimensions'
+import { windowWidth, windowHeight } from '../utilities/Dimensions'
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 import { ActivityIndicator } from 'react-native-paper'
 import Svg from 'react-native-svg'
@@ -183,6 +185,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     width: windowWidth,
     height: windowHeight,
+    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
   },
   textInput: {
     height: 50,
