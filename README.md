@@ -5,7 +5,7 @@
 # BB - Behind Barcode
 
 <!-- Project description -->
-## This project is the final project of the Full Stack Developer bootcamp at SE Factory. BB is a mobile application built using **React Native** for the frontend and **Firebase**, **Laravel** and **MySQL** for the backend. BB addresses the current existing challenges behind the fluctuation of grocery prices and the financial crisis in Lebanon. Through BB we aim to drive competition in the grocery market by revealing the hidden prices behind barcodes, thus, people residing in Lebanon will be able to save up. 
+This project is the final project of the Full Stack Developer bootcamp at SE Factory. BB is a mobile application built using **React Native** for the frontend and **Firebase**, **Laravel** and **MySQL** for the backend. BB addresses the current existing challenges behind the fluctuation of grocery prices and the financial crisis in Lebanon. Through BB we aim to drive competition in the grocery market by revealing the hidden prices behind barcodes, thus, people residing in Lebanon will be able to save up. 
 
 <br>
 
