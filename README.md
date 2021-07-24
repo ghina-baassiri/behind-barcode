@@ -9,12 +9,6 @@ This project is the final project of the Full Stack Developer bootcamp at SE Fac
 
 <br>
 
-# Demo
-
-![BB Demo](https://j.gifs.com/791PR8.gif)
-
-<br>
-
 # Installation
 
 The project is divided into two folders/projects, frontend and backend. Each must be installed and handled individually.
