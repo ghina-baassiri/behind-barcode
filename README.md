@@ -11,7 +11,7 @@ This project is the final project of the Full Stack Developer bootcamp at SE Fac
 
 # Demo
 
-![BB Demo](https://j.gifs.com/LZ7v5v.gif)
+![BB Demo](https://j.gifs.com/791PR8.gif)
 
 <br>
 
